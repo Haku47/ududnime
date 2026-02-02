@@ -22,9 +22,15 @@
     </div>
 
     <div class="p-4 md:p-6 space-y-2 max-h-[500px] overflow-y-auto custom-scroll">
-      <div v-if="loading" class="flex flex-col items-center py-20 gap-4">
-        <div class="animate-spin h-8 w-8 border-2 border-t-[var(--accent-color)] border-transparent rounded-full"></div>
-        <p class="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em]">Syncing Schedule...</p>
+      
+      <div v-if="loading" class="space-y-3">
+        <div v-for="n in 5" :key="n" class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 animate-pulse">
+          <div class="flex items-center gap-6">
+            <div class="w-10 h-3 bg-white/10 rounded-full"></div>
+            <div class="w-32 md:w-48 h-3 bg-white/10 rounded-full"></div>
+          </div>
+          <div class="w-16 h-5 bg-white/10 rounded-lg"></div>
+        </div>
       </div>
 
       <div v-else-if="scheduleList.length > 0">
@@ -46,7 +52,7 @@
           <div class="flex items-center gap-4">
             <div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-black/40 rounded-lg border border-white/5">
                <i class="fa-solid fa-play text-[8px] text-[var(--accent-color)]"></i>
-               <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Episode {{ anime.episodes || '?' }}</span>
+               <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Ep {{ anime.episodes || '?' }}</span>
             </div>
             <i class="fa-solid fa-chevron-right text-[10px] text-slate-700 group-hover:translate-x-1 transition-transform"></i>
           </div>
@@ -86,19 +92,14 @@ const t = (key) => {
   return translations[lang][key] || key;
 };
 
-// --- FUNGSI KONVERSI WAKTU JST KE WIB GAIS ---
 const convertJSTtoWIB = (jstTime) => {
   if (!jstTime || jstTime === 'Unknown') return '??:??';
-  
   const [hours, minutes] = jstTime.split(':').map(Number);
-  let wibHours = hours - 2; // Jepang (GMT+9) ke Malang (GMT+7)
-  
+  let wibHours = hours - 2; 
   if (wibHours < 0) wibHours += 24;
-  
   return `${String(wibHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 };
 
-// Generasi 7 hari kedepan gais
 const weekDays = computed(() => {
   const days = [];
   const baseDate = new Date();
@@ -115,19 +116,27 @@ const weekDays = computed(() => {
   return days;
 });
 
+// --- FUNGSI FETCH DENGAN DELAY GAIS ---
 const fetchDaySchedule = async () => {
   loading.value = true;
+  // Kita kosongkan list dulu biar efek skeletonnya berasa gais
+  scheduleList.value = [];
+  
   try {
     const currentDay = weekDays.value.find(d => d.date === activeDate.value)?.dayName;
+    
+    // Opsional: Kasih dikit delay biar transisi skeletonnya gak kedip (smooth gais)
+    await new Promise(resolve => setTimeout(resolve, 600)); 
+
     const res = await animeService.getSchedule(currentDay);
-    // Kita sort berdasarkan waktu rilis gais biar rapi
+    
     scheduleList.value = (res.data || []).sort((a, b) => {
       const timeA = a.broadcast?.time || '99:99';
       const timeB = b.broadcast?.time || '99:99';
       return timeA.localeCompare(timeB);
     });
   } catch (error) {
-    console.error("SCH_ERR");
+    console.error("SCH_ERR", error);
   } finally {
     loading.value = false;
   }
@@ -142,12 +151,3 @@ onMounted(() => {
 
 watch(activeDate, () => fetchDaySchedule());
 </script>
-
-<style scoped>
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.custom-scroll::-webkit-scrollbar { width: 4px; }
-.custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-.custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
-.fade-in { animation: fadeIn 0.6s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-</style>
