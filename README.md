@@ -118,3 +118,10 @@ ududnime/
 └─ vite.config.js     # Vite engine configuration
 ```
 ---
+
+## ⚠️ Disclaimer
+
+**UDUDNIME** is a non-commercial, educational project created for portfolio purposes.  
+- All anime-related data, images, and titles are provided by the **Jikan API** (an unofficial **MyAnimeList** API).  
+- This application does not host any video content or copyrighted media files.  
+- All trademarks and copyrights belong to their respective owners.
