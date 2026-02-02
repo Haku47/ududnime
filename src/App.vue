@@ -17,7 +17,7 @@
 import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
 
 // Lazy load biar aplikasi tetep ngebut gais
-const ChatBot = defineAsyncComponent(() => import('./components/ChatBot.vue'));
+const ChatBot = defineAsyncComponent(() => import('./components/ududbot.vue'));
 
 const currentUser = ref(null);
 const currentThemeColor = ref('#f97316'); // Default Orange UDUDNIME gais
