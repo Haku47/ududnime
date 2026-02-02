@@ -68,6 +68,16 @@
           </button>
         </form>
 
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/5"></div></div>
+          <div class="relative flex justify-center text-[8px] font-black uppercase tracking-[0.3em]"><span class="bg-slate-900 px-4 text-slate-600">Atau Pake Akun Dev</span></div>
+        </div>
+
+        <button @click="handleGitHubLogin" class="w-full bg-black/40 hover:bg-black/60 border border-white/5 hover:border-white/20 text-white font-black py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-4 uppercase text-[10px] tracking-widest group">
+          <i class="fa-brands fa-github text-lg group-hover:rotate-12 transition-transform"></i>
+          <span>{{ isLogin ? 'Masuk Pake GitHub' : 'Daftar Pake GitHub' }}</span>
+        </button>
+
         <div class="mt-8 pb-4 text-center">
           <p class="text-[9px] sm:text-[10px] text-slate-500 font-black uppercase tracking-widest">
             {{ isLogin ? t('no_account') : t('have_account') }}
@@ -84,6 +94,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { translations } from '../utils/i18n';
+import { supabase } from '../utils/supabase'; // Pastikan file ini sudah ada gais
 
 const props = defineProps(['user']);
 const emit = defineEmits(['close', 'authSuccess']);
@@ -100,12 +111,28 @@ const t = (key) => {
   return translations[lang][key] || key;
 };
 
+// --- 🌐 LOGIKA GITHUB LOGIN SAKTI GAIS ---
+const handleGitHubLogin = async () => {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        scopes: 'read:user',
+        redirectTo: window.location.origin
+      }
+    });
+    if (error) throw error;
+  } catch (err) {
+    errorMessage.value = "Gagal konek GitHub ker: " + err.message;
+  }
+};
+
 const handleSubmit = () => {
   errorMessage.value = "";
   const existingUsers = JSON.parse(localStorage.getItem('ududnime_users') || '[]');
   
   const cleanEmail = email.value.toLowerCase().trim();
-  const cleanUsername = username.value.trim(); // Simpan case asli gais!
+  const cleanUsername = username.value.trim(); 
 
   if (isLogin.value) {
     const user = existingUsers.find(u => u.email === cleanEmail && u.password === password.value);
@@ -137,7 +164,7 @@ const handleSubmit = () => {
 
     const newUser = { 
       id: Date.now(),
-      username: cleanUsername, // Case sesuai input user gais (RenKaito tetap RenKaito)
+      username: cleanUsername, 
       email: cleanEmail, 
       password: password.value,
       level: 1,
