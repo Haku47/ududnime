@@ -83,6 +83,7 @@ npm install
 ### 3. Environment Configuration
 Create a `.env` file in the root directory and add the API base URL:
 ```bash
+VITE_GEMINI_API_KEY=HERE ARE KEY
 VITE_API_BASE_URL=[https://api.jikan.moe/v4](https://api.jikan.moe/v4)
 ```
 
