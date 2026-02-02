@@ -27,7 +27,13 @@ const routes = [
   name: 'status',
   component: () => import('../views/StatusView.vue') // Pastikan file View-nya sudah ada gais
   },
-  
+
+  {
+  path: '/anime/:id',
+  name: 'anime-show',
+  component: () => import('../views/AnimeShowView.vue')
+  },
+
   // --- RUTE ERROR / 404 GAIS ---
   {
     path: '/404',

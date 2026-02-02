@@ -147,9 +147,10 @@ const handleWatchlist = () => {
   });
 };
 
-// --- 🌐 FUNGSI SHARE SAKTI GAIS ---
+// --- 🌐 FUNGSI SHARE DENGAN PERMALINK BARU GAIS ---
 const shareAction = (platform) => {
-  const shareUrl = window.location.href + (window.location.href.includes('?') ? '&' : '?') + `animeId=${props.anime.mal_id}`;
+  // Link sekarang merujuk ke AnimeShowView gais: /anime/:id
+  const shareUrl = `${window.location.origin}/anime/${props.anime.mal_id}`;
   const shareText = `Gais, cek anime "${props.anime.title}" di Ududnime! Mbois pol ker! 🍹🔥`;
 
   if (platform === 'whatsapp') {
@@ -158,7 +159,6 @@ const shareAction = (platform) => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
   } else if (platform === 'copy') {
     navigator.clipboard.writeText(shareUrl);
-    // Kita panggil toast lewat emit parent gais
     alert(t('link_copied')); 
   }
 };
