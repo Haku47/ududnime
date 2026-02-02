@@ -41,7 +41,7 @@
             <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Email</label>
             <div class="relative group">
               <i class="fa-solid fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
-              <input v-model="email" type="email" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="email@kamu.com" />
+              <input v-model="email" @input="email = email.toLowerCase()" type="email" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="email@kamu.com" />
             </div>
           </div>
 
@@ -49,7 +49,12 @@
             <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Password</label>
             <div class="relative group">
               <i class="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
-              <input v-model="password" type="password" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="••••••••" />
+              
+              <input :type="showPassword ? 'text' : 'password'" v-model="password" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-12 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="••••••••" />
+              
+              <button type="button" @click="showPassword = !showPassword" class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-[var(--accent-color)] transition-colors">
+                <i :class="['fa-solid', showPassword ? 'fa-eye-slash' : 'fa-eye']"></i>
+              </button>
             </div>
           </div>
 
@@ -78,6 +83,7 @@ import { ref, onMounted } from 'vue';
 const emit = defineEmits(['close', 'authSuccess']);
 
 const isLogin = ref(true);
+const showPassword = ref(false); // State buat visibility gais
 const username = ref("");
 const email = ref("");
 const password = ref("");
@@ -87,8 +93,11 @@ const handleSubmit = () => {
   errorMessage.value = "";
   const existingUsers = JSON.parse(localStorage.getItem('ududnime_users') || '[]');
 
+  // Kita pastikan email dicek dalam keadaan lowercase gais
+  const cleanEmail = email.value.toLowerCase().trim();
+
   if (isLogin.value) {
-    const user = existingUsers.find(u => u.email === email.value && u.password === password.value);
+    const user = existingUsers.find(u => u.email === cleanEmail && u.password === password.value);
     if (user) {
       user.level = user.level || 1;
       user.xp = user.xp || 0;
@@ -96,7 +105,6 @@ const handleSubmit = () => {
 
       localStorage.setItem('ududnime_session', JSON.stringify(user));
       
-      // Update tema global jika user punya preferensi warna gais
       if (user.themeColor) {
         document.documentElement.style.setProperty('--accent-color', user.themeColor);
         document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
@@ -108,11 +116,11 @@ const handleSubmit = () => {
       errorMessage.value = "Email atau Password salah gais!";
     }
   } else {
-    if (!username.value || !email.value || !password.value) {
+    if (!username.value || !cleanEmail || !password.value) {
       errorMessage.value = "Isi semua kolomnya dulu dong.";
       return;
     }
-    if (existingUsers.some(u => u.email === email.value)) {
+    if (existingUsers.some(u => u.email === cleanEmail)) {
       errorMessage.value = "Email ini sudah terdaftar!";
       return;
     }
@@ -120,7 +128,7 @@ const handleSubmit = () => {
     const newUser = { 
       id: Date.now(),
       username: username.value.toUpperCase(), 
-      email: email.value, 
+      email: cleanEmail, 
       password: password.value,
       level: 1,
       xp: 0,
@@ -139,7 +147,6 @@ const handleSubmit = () => {
 };
 
 onMounted(() => {
-  // Sync tema saat modal dibuka gais
   const session = localStorage.getItem('ududnime_session');
   if (session) {
     const user = JSON.parse(session);
@@ -150,16 +157,3 @@ onMounted(() => {
   }
 });
 </script>
-
-<style scoped>
-.fade-in { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-.animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-@keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
-}
-</style>
