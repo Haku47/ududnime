@@ -1,0 +1,165 @@
+<template>
+  <div class="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto" @click.self="$emit('close')">
+    
+    <div class="bg-slate-900 border border-white/5 w-full max-w-md my-auto flex flex-col rounded-[2.5rem] overflow-hidden relative shadow-2xl fade-in z-10 transition-all duration-300">
+      
+      <button @click="$emit('close')" class="absolute top-6 right-6 z-30 text-slate-500 hover:text-white transition-all hover:rotate-90">
+        <i class="fa-solid fa-xmark text-2xl"></i>
+      </button>
+
+      <div class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8 pt-10">
+        
+        <div class="text-center mb-8">
+          <div class="bg-gradient-to-tr from-[var(--accent-color)] to-[var(--accent-glow)] w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-[var(--accent-glow)] rotate-3 hover:rotate-12 transition-transform">
+            <i class="fa-solid fa-user-shield text-2xl sm:text-3xl text-white"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase italic">
+            {{ isLogin ? 'BALIK LAGI?' : 'GABUNG GAIS!' }}
+          </h2>
+          <p class="text-slate-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mt-3 leading-relaxed">
+            {{ isLogin ? 'Masuk buat lanjutin leveling kamu.' : 'Bikin akun dan mulai koleksi watchlist-mu.' }}
+          </p>
+        </div>
+
+        <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-5">
+          <transition name="fade">
+            <div v-if="errorMessage" class="bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl flex items-center gap-3 animate-shake">
+              <i class="fa-solid fa-circle-exclamation text-sm"></i>
+              {{ errorMessage }}
+            </div>
+          </transition>
+
+          <div v-if="!isLogin" class="space-y-2">
+            <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Username</label>
+            <div class="relative group">
+              <i class="fa-solid fa-id-card absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
+              <input v-model="username" type="text" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600 uppercase font-black tracking-widest" placeholder="UDUDHUNTER" />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Email</label>
+            <div class="relative group">
+              <i class="fa-solid fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
+              <input v-model="email" type="email" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="email@kamu.com" />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Password</label>
+            <div class="relative group">
+              <i class="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
+              <input v-model="password" type="password" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="••••••••" />
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-[var(--accent-color)] hover:opacity-90 text-white font-black py-4 sm:py-5 rounded-2xl mt-4 transition-all active:scale-95 shadow-xl shadow-[var(--accent-glow)] flex items-center justify-center gap-3 uppercase text-[10px] sm:text-xs tracking-[0.2em]">
+            <span>{{ isLogin ? 'MASUK SEKARANG' : 'DAFTAR AKUN' }}</span>
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+
+        <div class="mt-8 pb-4 text-center">
+          <p class="text-[9px] sm:text-[10px] text-slate-500 font-black uppercase tracking-widest">
+            {{ isLogin ? 'Belum punya akun?' : 'Sudah punya akun?' }}
+            <button @click="isLogin = !isLogin" class="text-[var(--accent-color)] hover:opacity-80 ml-1 underline decoration-2 underline-offset-4 transition-colors">
+              {{ isLogin ? 'Daftar gais' : 'Login aja' }}
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const emit = defineEmits(['close', 'authSuccess']);
+
+const isLogin = ref(true);
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const errorMessage = ref("");
+
+const handleSubmit = () => {
+  errorMessage.value = "";
+  const existingUsers = JSON.parse(localStorage.getItem('ududnime_users') || '[]');
+
+  if (isLogin.value) {
+    const user = existingUsers.find(u => u.email === email.value && u.password === password.value);
+    if (user) {
+      user.level = user.level || 1;
+      user.xp = user.xp || 0;
+      user.watchlist = user.watchlist || [];
+
+      localStorage.setItem('ududnime_session', JSON.stringify(user));
+      
+      // Update tema global jika user punya preferensi warna gais
+      if (user.themeColor) {
+        document.documentElement.style.setProperty('--accent-color', user.themeColor);
+        document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
+      }
+
+      emit('authSuccess', user);
+      emit('close');
+    } else {
+      errorMessage.value = "Email atau Password salah gais!";
+    }
+  } else {
+    if (!username.value || !email.value || !password.value) {
+      errorMessage.value = "Isi semua kolomnya dulu dong.";
+      return;
+    }
+    if (existingUsers.some(u => u.email === email.value)) {
+      errorMessage.value = "Email ini sudah terdaftar!";
+      return;
+    }
+
+    const newUser = { 
+      id: Date.now(),
+      username: username.value.toUpperCase(), 
+      email: email.value, 
+      password: password.value,
+      level: 1,
+      xp: 0,
+      avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${username.value}`,
+      watchlist: [],
+      createdAt: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
+    };
+
+    existingUsers.push(newUser);
+    localStorage.setItem('ududnime_users', JSON.stringify(existingUsers));
+    isLogin.value = true;
+    errorMessage.value = "";
+    alert("AKUN BERHASIL DIBUAT! SILAHKAN LOGIN GAIS.");
+    username.value = "";
+  }
+};
+
+onMounted(() => {
+  // Sync tema saat modal dibuka gais
+  const session = localStorage.getItem('ududnime_session');
+  if (session) {
+    const user = JSON.parse(session);
+    if (user.themeColor) {
+      document.documentElement.style.setProperty('--accent-color', user.themeColor);
+      document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
+    }
+  }
+});
+</script>
+
+<style scoped>
+.fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+</style>
