@@ -31,7 +31,15 @@ export const translations = {
     save_btn: "SAVE",
     lang_title: "SYSTEM LANGUAGE",
     update_user: "UPDATE USERNAME",
-    logout_btn: "LOGOUT ACCOUNT"
+    logout_btn: "LOGOUT ACCOUNT",
+    // Toast & System System Message
+    system_label: "UDUDNIME SYSTEM",
+    success_add: "Added to watchlist gais!",
+    success_remove: "Removed from watchlist!",
+    error_action: "Action failed, try again gais.",
+    level_up: "LEVEL UP! YOU ARE NOW RANK:",
+    backup_success: "Data exported successfully!",
+    restore_success: "Data restored perfectly gais!"
   },
   id: {
     // Hero & Tagline
@@ -65,7 +73,15 @@ export const translations = {
     save_btn: "SIMPAN",
     lang_title: "BAHASA SISTEM",
     update_user: "PERBARUI USERNAME",
-    logout_btn: "KELUAR AKUN"
+    logout_btn: "KELUAR AKUN",
+    // Toast & System System Message
+    system_label: "SISTEM UDUDNIME",
+    success_add: "Berhasil nambah watchlist gais!",
+    success_remove: "Dihapus dari watchlist!",
+    error_action: "Gagal gais, coba lagi ya.",
+    level_up: "LEVEL NAIK! RANK KAMU SEKARANG:",
+    backup_success: "Data berhasil diekspor!",
+    restore_success: "Data berhasil dipulihkan gais!"
   },
   jv: {
     // Hero & Tagline
@@ -99,7 +115,15 @@ export const translations = {
     save_btn: "SIMPEN",
     lang_title: "GANTI BOSO",
     update_user: "GANTI JENENG",
-    logout_btn: "METU AKUN"
+    logout_btn: "METU AKUN",
+    // Toast & System System Message
+    system_label: "SISTEM UDUDNIME KER",
+    success_add: "Wes kesimpen gais, mantap!",
+    success_remove: "Wes guwak gais!",
+    error_action: "Eror ker, baleni maneh!",
+    level_up: "NAIK PANGKAT KER! RANKMU SAIKI:",
+    backup_success: "Data wes diamanno!",
+    restore_success: "Data wes mbalik maneh gais!"
   },
   jp: {
     // Hero & Tagline
@@ -133,6 +157,14 @@ export const translations = {
     save_btn: "HOZON",
     lang_title: "GENGO SETTEI",
     update_user: "YŪZĀ-MEI HENKŌ",
-    logout_btn: "RŌGUAUTO"
+    logout_btn: "RŌGUAUTO",
+    // Toast & System System Message
+    system_label: "UDUDNIME SHISUTEMU",
+    success_add: "Risuto ni tsuika shimashita!",
+    success_remove: "Risuto kara sakujo shimashita!",
+    error_action: "Sippai shimashita, mōichido!",
+    level_up: "REBERU APPU! IMA NO RANKU:",
+    backup_success: "Bakkuappu kanryō!",
+    restore_success: "Dēta ga fukkyū shimashita!"
   }
 };
