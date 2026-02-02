@@ -9,7 +9,7 @@ const userInput = ref('');
 const isTyping = ref(false);
 const chatBox = ref(null);
 
-const API_KEY = "AIzaSyD_Ta1dBX-M_D1xHbMdMANLA0Ch9KyU520"; 
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const initialMessage = { role: 'bot', text: 'Halo gais! UdudBot AI sudah bangun. Mau nanya rekomendasi anime apa hari ini?' };
 const messages = ref([initialMessage]);
