@@ -32,14 +32,30 @@ export const translations = {
     lang_title: "SYSTEM LANGUAGE",
     update_user: "UPDATE USERNAME",
     logout_btn: "LOGOUT ACCOUNT",
-    // Toast & System System Message
+    // Toast & System Message
     system_label: "UDUDNIME SYSTEM",
     success_add: "Added to watchlist gais!",
     success_remove: "Removed from watchlist!",
     error_action: "Action failed, try again gais.",
     level_up: "LEVEL UP! YOU ARE NOW RANK:",
     backup_success: "Data exported successfully!",
-    restore_success: "Data restored perfectly gais!"
+    restore_success: "Data restored perfectly gais!",
+    // Auth Modal (EN)
+    login_title: "BACK AGAIN?",
+    register_title: "JOIN US GAIS!",
+    login_sub: "Login to continue your leveling progress.",
+    register_sub: "Create an account and start your collection.",
+    username_label: "Username",
+    username_placeholder: "E.G: UDUDHUNTER",
+    register_btn: "SIGN UP",
+    no_account: "Don't have an account?",
+    have_account: "Already have an account?",
+    register_link: "Register gais",
+    login_link: "Login now",
+    err_login: "Invalid Email or Password gais!",
+    err_empty: "Please fill all fields first.",
+    err_exists: "Email already registered!",
+    register_success: "ACCOUNT CREATED! PLEASE LOGIN GAIS."
   },
   id: {
     // Hero & Tagline
@@ -74,14 +90,30 @@ export const translations = {
     lang_title: "BAHASA SISTEM",
     update_user: "PERBARUI USERNAME",
     logout_btn: "KELUAR AKUN",
-    // Toast & System System Message
+    // Toast & System Message
     system_label: "SISTEM UDUDNIME",
     success_add: "Berhasil nambah watchlist gais!",
     success_remove: "Dihapus dari watchlist!",
     error_action: "Gagal gais, coba lagi ya.",
     level_up: "LEVEL NAIK! RANK KAMU SEKARANG:",
     backup_success: "Data berhasil diekspor!",
-    restore_success: "Data berhasil dipulihkan gais!"
+    restore_success: "Data berhasil dipulihkan gais!",
+    // Auth Modal (ID)
+    login_title: "BALIK LAGI?",
+    register_title: "GABUNG GAIS!",
+    login_sub: "Masuk buat lanjutin leveling kamu.",
+    register_sub: "Bikin akun dan mulai koleksi watchlist-mu.",
+    username_label: "Username",
+    username_placeholder: "CONTOH: UDUDHUNTER",
+    register_btn: "DAFTAR AKUN",
+    no_account: "Belum punya akun?",
+    have_account: "Sudah punya akun?",
+    register_link: "Daftar gais",
+    login_link: "Login aja",
+    err_login: "Email atau Password salah gais!",
+    err_empty: "Isi semua kolomnya dulu dong.",
+    err_exists: "Email ini sudah terdaftar!",
+    register_success: "AKUN BERHASIL DIBUAT! SILAHKAN LOGIN GAIS."
   },
   jv: {
     // Hero & Tagline
@@ -116,14 +148,30 @@ export const translations = {
     lang_title: "GANTI BOSO",
     update_user: "GANTI JENENG",
     logout_btn: "METU AKUN",
-    // Toast & System System Message
+    // Toast & System Message
     system_label: "SISTEM UDUDNIME KER",
     success_add: "Wes kesimpen gais, mantap!",
     success_remove: "Wes guwak gais!",
     error_action: "Eror ker, baleni maneh!",
     level_up: "NAIK PANGKAT KER! RANKMU SAIKI:",
     backup_success: "Data wes diamanno!",
-    restore_success: "Data wes mbalik maneh gais!"
+    restore_success: "Data wes mbalik maneh gais!",
+    // Auth Modal (JV)
+    login_title: "BALIK MANEH?",
+    register_title: "GABUNG KER!",
+    login_sub: "Mlebuo nggo lanjutno progresmu.",
+    register_sub: "Gawe akun dhisik nggo nyimpen watchlist.",
+    username_label: "Jeneng",
+    username_placeholder: "CONTOH: CAK_UDUD",
+    register_btn: "GAWE AKUN",
+    no_account: "Gak duwe akun?",
+    have_account: "Wes duwe akun?",
+    register_link: "Daftar ker",
+    login_link: "Mlebu ae",
+    err_login: "Email utowo Password-e kleru ker!",
+    err_empty: "Isien kabeh dhisik rek.",
+    err_exists: "Email iki wes gawe!",
+    register_success: "AKUNMU WES DADI! SAIKI MLEBUO KER."
   },
   jp: {
     // Hero & Tagline
@@ -158,13 +206,29 @@ export const translations = {
     lang_title: "GENGO SETTEI",
     update_user: "YŪZĀ-MEI HENKŌ",
     logout_btn: "RŌGUAUTO",
-    // Toast & System System Message
+    // Toast & System Message
     system_label: "UDUDNIME SHISUTEMU",
     success_add: "Risuto ni tsuika shimashita!",
     success_remove: "Risuto kara sakujo shimashita!",
     error_action: "Sippai shimashita, mōichido!",
     level_up: "REBERU APPU! IMA NO RANKU:",
     backup_success: "Bakkuappu kanryō!",
-    restore_success: "Dēta ga fukkyū shimashita!"
+    restore_success: "Dēta ga fukkyū shimashita!",
+    // Auth Modal (JP)
+    login_title: "OKAERI?",
+    register_title: "SANKA SHIMASHOU!",
+    login_sub: "Reberu-age o tsudukeru ni wa rogu-in shite kudasai.",
+    register_sub: "Akauto o sakusei shite, risuto o tsukurimashou.",
+    username_label: "Yūzā-mei",
+    username_placeholder: "REI: UDUDHUNTER",
+    register_btn: "SANKA SURU",
+    no_account: "Akauto ga arimasen ka?",
+    have_account: "Akauto o omochi desu ka?",
+    register_link: "Tōroku suru",
+    login_link: "Rogu-in suru",
+    err_login: "Mēru ka pasuwādo ga machigatte imasu!",
+    err_empty: "Subete no kōmoku o nyūryoku shite kudasai.",
+    err_exists: "Kono mēru wa sude ni tōrokuされています!",
+    register_success: "AKAUNTO SAKUSEI KANRYŌ! ROGUIN SHITE KUDASAI."
   }
 };

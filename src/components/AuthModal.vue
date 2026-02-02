@@ -14,10 +14,10 @@
             <i class="fa-solid fa-user-shield text-2xl sm:text-3xl text-white"></i>
           </div>
           <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase italic">
-            {{ isLogin ? 'BALIK LAGI?' : 'GABUNG GAIS!' }}
+            {{ isLogin ? t('login_title') : t('register_title') }}
           </h2>
           <p class="text-slate-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mt-3 leading-relaxed">
-            {{ isLogin ? 'Masuk buat lanjutin leveling kamu.' : 'Bikin akun dan mulai koleksi watchlist-mu.' }}
+            {{ isLogin ? t('login_sub') : t('register_sub') }}
           </p>
         </div>
 
@@ -30,10 +30,10 @@
           </transition>
 
           <div v-if="!isLogin" class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Username</label>
+            <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">{{ t('username_label') }}</label>
             <div class="relative group">
               <i class="fa-solid fa-id-card absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
-              <input v-model="username" type="text" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600 uppercase font-black tracking-widest" placeholder="UDUDHUNTER" />
+              <input v-model="username" type="text" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600 uppercase font-black tracking-widest" :placeholder="t('username_placeholder')" />
             </div>
           </div>
 
@@ -49,9 +49,7 @@
             <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Password</label>
             <div class="relative group">
               <i class="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
-              
               <input :type="showPassword ? 'text' : 'password'" v-model="password" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-12 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="••••••••" />
-              
               <button type="button" @click="showPassword = !showPassword" class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-[var(--accent-color)] transition-colors">
                 <i :class="['fa-solid', showPassword ? 'fa-eye-slash' : 'fa-eye']"></i>
               </button>
@@ -59,16 +57,16 @@
           </div>
 
           <button type="submit" class="w-full bg-[var(--accent-color)] hover:opacity-90 text-white font-black py-4 sm:py-5 rounded-2xl mt-4 transition-all active:scale-95 shadow-xl shadow-[var(--accent-glow)] flex items-center justify-center gap-3 uppercase text-[10px] sm:text-xs tracking-[0.2em]">
-            <span>{{ isLogin ? 'MASUK SEKARANG' : 'DAFTAR AKUN' }}</span>
+            <span>{{ isLogin ? t('login') : t('register_btn') }}</span>
             <i class="fa-solid fa-paper-plane"></i>
           </button>
         </form>
 
         <div class="mt-8 pb-4 text-center">
           <p class="text-[9px] sm:text-[10px] text-slate-500 font-black uppercase tracking-widest">
-            {{ isLogin ? 'Belum punya akun?' : 'Sudah punya akun?' }}
+            {{ isLogin ? t('no_account') : t('have_account') }}
             <button @click="isLogin = !isLogin" class="text-[var(--accent-color)] hover:opacity-80 ml-1 underline decoration-2 underline-offset-4 transition-colors">
-              {{ isLogin ? 'Daftar gais' : 'Login aja' }}
+              {{ isLogin ? t('register_link') : t('login_link') }}
             </button>
           </p>
         </div>
@@ -79,21 +77,27 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { translations } from '../utils/i18n'; // Pastikan path benar gais
 
+const props = defineProps(['user']);
 const emit = defineEmits(['close', 'authSuccess']);
 
 const isLogin = ref(true);
-const showPassword = ref(false); // State buat visibility gais
+const showPassword = ref(false);
 const username = ref("");
 const email = ref("");
 const password = ref("");
 const errorMessage = ref("");
 
+// Helper fungsi translasi gais
+const t = (key) => {
+  const lang = props.user?.lang || 'en';
+  return translations[lang][key] || key;
+};
+
 const handleSubmit = () => {
   errorMessage.value = "";
   const existingUsers = JSON.parse(localStorage.getItem('ududnime_users') || '[]');
-
-  // Kita pastikan email dicek dalam keadaan lowercase gais
   const cleanEmail = email.value.toLowerCase().trim();
 
   if (isLogin.value) {
@@ -102,7 +106,6 @@ const handleSubmit = () => {
       user.level = user.level || 1;
       user.xp = user.xp || 0;
       user.watchlist = user.watchlist || [];
-
       localStorage.setItem('ududnime_session', JSON.stringify(user));
       
       if (user.themeColor) {
@@ -113,15 +116,15 @@ const handleSubmit = () => {
       emit('authSuccess', user);
       emit('close');
     } else {
-      errorMessage.value = "Email atau Password salah gais!";
+      errorMessage.value = t('err_login');
     }
   } else {
     if (!username.value || !cleanEmail || !password.value) {
-      errorMessage.value = "Isi semua kolomnya dulu dong.";
+      errorMessage.value = t('err_empty');
       return;
     }
     if (existingUsers.some(u => u.email === cleanEmail)) {
-      errorMessage.value = "Email ini sudah terdaftar!";
+      errorMessage.value = t('err_exists');
       return;
     }
 
@@ -132,6 +135,7 @@ const handleSubmit = () => {
       password: password.value,
       level: 1,
       xp: 0,
+      lang: props.user?.lang || 'en', // Simpan preferensi bahasa gais
       avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${username.value}`,
       watchlist: [],
       createdAt: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -141,7 +145,7 @@ const handleSubmit = () => {
     localStorage.setItem('ududnime_users', JSON.stringify(existingUsers));
     isLogin.value = true;
     errorMessage.value = "";
-    alert("AKUN BERHASIL DIBUAT! SILAHKAN LOGIN GAIS.");
+    alert(t('register_success'));
     username.value = "";
   }
 };
