@@ -57,6 +57,16 @@ export const translations = {
     genre: "GENRE",
     season: "SEASON",
     year: "YEAR",
+    // Detail Modal & Social Share
+    in_watchlist: "IN WATCHLIST",
+    add_watchlist: "ADD WATCHLIST",
+    synopsis: "SYNOPSIS",
+    no_synopsis: "No description provided.",
+    categories: "CATEGORIES",
+    share_anime: "SHARE THIS ANIME",
+    copy_link: "COPY LINK",
+    link_copied: "LINK COPIED TO CLIPBOARD!",
+    release: "Release",
     // Toast & System Message
     system_label: "UDUDNIME SYSTEM",
     success_add: "Added to watchlist gais!",
@@ -66,7 +76,7 @@ export const translations = {
     backup_success: "Data exported successfully!",
     restore_success: "Data restored perfectly gais!",
     logout_success: "LOGGED OUT SUCCESSFULLY!",
-    // Auth Modal
+    // Auth Modal (EN)
     login_title: "BACK AGAIN?",
     register_title: "JOIN US GAIS!",
     login_sub: "Login to continue your leveling progress.",
@@ -141,6 +151,16 @@ export const translations = {
     genre: "GENRE",
     season: "MUSIM",
     year: "TAHUN",
+    // Detail Modal & Social Share
+    in_watchlist: "DI WATCHLIST",
+    add_watchlist: "TAMBAH WATCHLIST",
+    synopsis: "SINOPSIS",
+    no_synopsis: "Tidak ada deskripsi tersedia.",
+    categories: "KATEGORI",
+    share_anime: "BAGIKAN ANIME INI",
+    copy_link: "SALIN TAUTAN",
+    link_copied: "TAUTAN DISALIN KE CLIPBOARD!",
+    release: "Rilis",
     // Toast & System Message
     system_label: "SISTEM UDUDNIME",
     success_add: "Berhasil nambah watchlist gais!",
@@ -150,7 +170,7 @@ export const translations = {
     backup_success: "Data berhasil diekspor!",
     restore_success: "Data berhasil dipulihkan gais!",
     logout_success: "BERHASIL KELUAR!",
-    // Auth Modal
+    // Auth Modal (ID)
     login_title: "BALIK LAGI?",
     register_title: "GABUNG GAIS!",
     login_sub: "Masuk buat lanjutin leveling kamu.",
@@ -225,6 +245,16 @@ export const translations = {
     genre: "GENRE",
     season: "MUSIM",
     year: "TAHUN",
+    // Detail Modal & Social Share
+    in_watchlist: "WES DISIMPEN",
+    add_watchlist: "SIMPEN REK",
+    synopsis: "RINGKASAN CERITO",
+    no_synopsis: "Gak ono ceritane cak.",
+    categories: "KATEGORI",
+    share_anime: "PAMER NANG KONCO",
+    copy_link: "SALIN LINK",
+    link_copied: "LINK WIS DISALIN CAK!",
+    release: "Rilis",
     // Toast & System Message
     system_label: "SISTEM UDUDNIME KER",
     success_add: "Wes kesimpen gais, mantap!",
@@ -234,7 +264,7 @@ export const translations = {
     backup_success: "Data wes diamanno!",
     restore_success: "Data wes mbalik maneh gais!",
     logout_success: "WES METU KER!",
-    // Auth Modal
+    // Auth Modal (JV)
     login_title: "BALIK MANEH?",
     register_title: "GABUNG KER!",
     login_sub: "Mlebuo nggo lanjutno progresmu.",
@@ -309,6 +339,16 @@ export const translations = {
     genre: "JANRU",
     season: "SHĪZUN",
     year: "TOSHI",
+    // Detail Modal & Social Share
+    in_watchlist: "MURISUTO-NAI",
+    add_watchlist: "MURISUTO NI TSUIKA",
+    synopsis: "ARASUJI",
+    no_synopsis: "Setsumei ga arimasen.",
+    categories: "KATEGORĪ",
+    share_anime: "KONO ANIME O SHIERU",
+    copy_link: "RINKU O KOPĪ",
+    link_copied: "RINKU GA KOPĪ SAREMASHITA!",
+    release: "Rirīsu",
     // Toast & System Message
     system_label: "UDUDNIME SHISUTEMU",
     success_add: "Risuto ni tsuika shimashita!",
@@ -318,7 +358,7 @@ export const translations = {
     backup_success: "Bakkuappu kanryō!",
     restore_success: "Dēta ga fukkyū shimashita!",
     logout_success: "RŌGUAUTO NI SEIKŌ SHIMASHITA!",
-    // Auth Modal
+    // Auth Modal (JP)
     login_title: "OKAERI?",
     register_title: "SANKA SHIMASHOU!",
     login_sub: "Reberu-age o tsudukeru ni wa rogu-in shite kudasai.",
