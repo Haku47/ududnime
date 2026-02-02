@@ -6,7 +6,7 @@ import { translations } from '../utils/i18n';
 
 // --- OPTIMASI: LAZY LOADING KOMPONEN ---
 const Navbar = defineAsyncComponent(() => import('../components/Navbar.vue'));
-const SearchBar = defineAsyncComponent(() => import('../components/SearchBar.vue'));
+const SearchBar = defineAsyncComponent(() => import('../components/Searchbar.vue'));
 const AnimeCard = defineAsyncComponent(() => import('../components/AnimeCard.vue'));
 const DetailModal = defineAsyncComponent(() => import('../components/DetailModal.vue'));
 const AuthModal = defineAsyncComponent(() => import('../components/AuthModal.vue'));
