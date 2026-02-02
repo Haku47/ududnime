@@ -34,15 +34,15 @@
             <img :src="user.avatar" class="w-9 h-9 rounded-xl object-cover border-2 border-slate-800 shadow-lg" alt="Profile" />
             <div class="text-left hidden lg:block">
               <p class="text-[9px] text-[var(--accent-color)] leading-none uppercase font-black tracking-tighter">LVL {{ user.level || 1 }}</p>
-              <p class="text-xs text-white font-black leading-tight truncate max-w-[80px] uppercase">{{ user.username }}</p>
+              <p class="text-xs text-white font-black leading-tight truncate max-w-[80px]">{{ user.username }}</p>
             </div>
             <i class="fa-solid fa-chevron-down text-[10px] ml-1 text-slate-500 group-hover:text-[var(--accent-color)] transition-colors"></i>
           </button>
 
           <div class="absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-[2rem] shadow-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-2 z-[60] backdrop-blur-xl">
-             <div class="px-5 py-3 border-b border-slate-800/50 mb-2 bg-slate-800/30">
+            <div class="px-5 py-3 border-b border-slate-800/50 mb-2 bg-slate-800/30">
               <div class="flex justify-between items-center mb-2">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ t('xp_label') }}</span>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ t('exp_label') }}</span>
                 <span class="text-[9px] font-black text-[var(--accent-color)]">{{ user.xp || 0 }}%</span>
               </div>
               <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden p-[1px]">
@@ -87,8 +87,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { translations } from '../utils/i18n'; // Import dari file pusat gais
 import Notification from './Notification.vue'; 
 
 const props = defineProps(['user']);
@@ -98,16 +99,10 @@ const router = useRouter();
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
 
-// --- 🌐 LOCALIZATION LOGIC GAIS ---
-const translations = {
-  en: { home: "Home", browse: "Browse", schedule: "Schedule", about_us: "About Us", dashboard: "Dashboard", logout_btn: "Logout Account", login: "Login", xp_label: "XP Progress" },
-  id: { home: "Beranda", browse: "Jelajah", schedule: "Jadwal", about_us: "Tentang Kami", dashboard: "Panel Akun", logout_btn: "Keluar Akun", login: "Masuk", xp_label: "Progres XP" },
-  jv: { home: "Omah", browse: "Ublek-ublek", schedule: "Jadwal Rilis", about_us: "Sopo Aku", dashboard: "Omah Akun", logout_btn: "Metu Akun", login: "Mlebu", xp_label: "Progres Sakti" },
-  jp: { home: "Hōmu", browse: "Tansaku", schedule: "Sukejūru", about_us: "Watashitachi", dashboard: "Dasshubōdo", logout_btn: "Rōguauto", login: "Rogu-in", xp_label: "XP keika" }
-};
-
+// --- 🌐 LOCALIZATION HELP GAIS ---
 const t = (key) => {
   const lang = props.user?.lang || 'en';
+  // Ambil langsung dari file translations.js biar gak dobel data gais
   return translations[lang][key] || key;
 };
 
@@ -128,6 +123,4 @@ const handleMobileNav = (path) => {
 <style scoped>
 .slide-down-enter-active, .slide-down-leave-active { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 .slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-20px); }
-
-span { letter-spacing: -0.05em; }
 </style>

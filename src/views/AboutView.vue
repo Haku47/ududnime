@@ -25,28 +25,36 @@ const t = (key) => {
       about_desc: "UDUDNIME is a modern anime catalog platform developed to facilitate real-time anime searching and tracking for anime lovers throughout Indonesia.",
       tech_title: "Technology Stack",
       back_home: "Back to Home",
-      email_copied: "EMAIL COPIED TO CLIPBOARD!"
+      email_copied: "EMAIL COPIED TO CLIPBOARD!",
+      undergraduate: "Undergraduate Student",
+      welcome_msg: "WELCOME BACK"
     },
     id: {
       dev_profile: "Profil Pengembang",
       about_desc: "UDUDNIME adalah platform katalog anime modern yang dikembangkan untuk memudahkan pencarian dan tracking anime secara real-time bagi para penikmat anime di seluruh Indonesia.",
       tech_title: "Teknologi Yang Digunakan",
       back_home: "Kembali ke Beranda",
-      email_copied: "EMAIL DISALIN KE CLIPBOARD!"
+      email_copied: "EMAIL DISALIN KE CLIPBOARD!",
+      undergraduate: "Mahasiswa S1",
+      welcome_msg: "SELAMAT DATANG"
     },
     jv: {
       dev_profile: "Sopo Sing Nggawe",
       about_desc: "UDUDNIME iki wadah nggo nggoleki lan mantau jadwal anime jaman saiki sing digawe nggo nggampangne arek-arek penikmat anime sak Indonesia cak.",
       tech_title: "Gaman Sing Digarap",
       back_home: "Balik Nang Omah",
-      email_copied: "E-MAIL WIS DISALIN CAK!"
+      email_copied: "E-MAIL WIS DISALIN CAK!",
+      undergraduate: "Arek Kuliah S1",
+      welcome_msg: "SUGENG RAWUH"
     },
     jp: {
       dev_profile: "Kaihatsu-sha purofīru",
       about_desc: "UDUDNIME wa, Indonesia-jū no anime-zuki no tame ni riarutaimu no anime kensaku to torakkingu o yōi ni suru tame ni kaihatsu sa reta modan'na anime katarogu purattofōmudesu.",
       tech_title: "Shiyō gijutsu",
       back_home: "Hōmu ni modoru",
-      email_copied: "MĒRU GA KURIPPUBŌDO NI KOPĪ SAREMASHITA!"
+      email_copied: "MĒRU GA KURIPPUBŌDO NI KOPĪ SAREMASHITA!",
+      undergraduate: "Gakubu-sei",
+      welcome_msg: "OKAERINASAI"
     }
   };
 
@@ -74,7 +82,7 @@ const handleAuthSuccess = (user) => {
   currentUser.value = user
   showAuth.value = false
   if (toastRef.value) {
-    const msg = currentUser.value.lang === 'jv' ? `SUGENG RAWUH, ${user.username.toUpperCase()}!` : `SELAMAT DATANG, ${user.username.toUpperCase()}!`;
+    const msg = `${t('welcome_msg')}, ${user.username.toUpperCase()}!`;
     toastRef.value.addToast(msg, 'success')
   }
 }
@@ -149,13 +157,13 @@ onUnmounted(() => {
           </p>
 
           <div class="flex flex-col items-center gap-6 py-10 border-t border-white/5">
-            <div class="w-24 h-24 bg-gradient-to-tr from-[var(--accent-color)] to-var(--accent-glow) rounded-3xl flex items-center justify-center rotate-6 shadow-2xl shadow-[var(--accent-glow)] hover:rotate-0 hover:scale-110 transition-all duration-500 cursor-pointer group">
+            <div class="w-24 h-24 bg-gradient-to-tr from-[var(--accent-color)] to-[var(--accent-glow)] rounded-3xl flex items-center justify-center rotate-6 shadow-2xl shadow-[var(--accent-glow)] hover:rotate-0 hover:scale-110 transition-all duration-500 cursor-pointer group">
               <i class="fa-solid fa-code text-4xl text-white group-hover:scale-110 transition-transform"></i>
             </div>
             
             <div class="text-center">
               <h2 class="text-3xl font-black uppercase tracking-tight text-white leading-tight">ALVIENSYAH MOHAMMAD</h2>
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--accent-color)] mt-2">Undergraduate student</p>
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--accent-color)] mt-2">{{ t('undergraduate') }}</p>
               
               <div 
                 @click="copyEmail" 

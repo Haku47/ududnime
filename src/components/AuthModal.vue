@@ -33,7 +33,13 @@
             <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">{{ t('username_label') }}</label>
             <div class="relative group">
               <i class="fa-solid fa-id-card absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
-              <input v-model="username" type="text" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600 uppercase font-black tracking-widest" :placeholder="t('username_placeholder')" />
+              <input 
+                v-model="username" 
+                @input="username = username.replace(/\s/g, '')"
+                type="text" 
+                class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600 font-bold tracking-wide" 
+                :placeholder="t('username_placeholder')" 
+              />
             </div>
           </div>
 
@@ -41,7 +47,7 @@
             <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Email</label>
             <div class="relative group">
               <i class="fa-solid fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--accent-color)] transition-colors text-sm"></i>
-              <input v-model="email" @input="email = email.toLowerCase()" type="email" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="email@kamu.com" />
+              <input v-model="email" @input="email = email.toLowerCase().replace(/\s/g, '')" type="email" class="w-full bg-slate-800/40 border border-white/5 rounded-2xl py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white focus:ring-2 focus:ring-[var(--accent-glow)] focus:border-[var(--accent-color)] outline-none transition-all placeholder:text-slate-600" placeholder="email@kamu.com" />
             </div>
           </div>
 
@@ -77,7 +83,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { translations } from '../utils/i18n'; // Pastikan path benar gais
+import { translations } from '../utils/i18n';
 
 const props = defineProps(['user']);
 const emit = defineEmits(['close', 'authSuccess']);
@@ -89,7 +95,6 @@ const email = ref("");
 const password = ref("");
 const errorMessage = ref("");
 
-// Helper fungsi translasi gais
 const t = (key) => {
   const lang = props.user?.lang || 'en';
   return translations[lang][key] || key;
@@ -98,7 +103,9 @@ const t = (key) => {
 const handleSubmit = () => {
   errorMessage.value = "";
   const existingUsers = JSON.parse(localStorage.getItem('ududnime_users') || '[]');
+  
   const cleanEmail = email.value.toLowerCase().trim();
+  const cleanUsername = username.value.trim(); // Simpan case asli gais!
 
   if (isLogin.value) {
     const user = existingUsers.find(u => u.email === cleanEmail && u.password === password.value);
@@ -119,7 +126,7 @@ const handleSubmit = () => {
       errorMessage.value = t('err_login');
     }
   } else {
-    if (!username.value || !cleanEmail || !password.value) {
+    if (!cleanUsername || !cleanEmail || !password.value) {
       errorMessage.value = t('err_empty');
       return;
     }
@@ -130,13 +137,13 @@ const handleSubmit = () => {
 
     const newUser = { 
       id: Date.now(),
-      username: username.value.toUpperCase(), 
+      username: cleanUsername, // Case sesuai input user gais (RenKaito tetap RenKaito)
       email: cleanEmail, 
       password: password.value,
       level: 1,
       xp: 0,
-      lang: props.user?.lang || 'en', // Simpan preferensi bahasa gais
-      avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${username.value}`,
+      lang: props.user?.lang || 'en',
+      avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${cleanUsername}`,
       watchlist: [],
       createdAt: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
     };
