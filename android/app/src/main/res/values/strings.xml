@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ududnime</string>
+    <string name="title_activity_main">ududnime</string>
+    <string name="package_name">com.ududnime.app</string>
+    <string name="custom_url_scheme">com.ududnime.app</string>
+</resources>
