@@ -19,8 +19,12 @@
       <div class="absolute -inset-4 border-t-2 border-[var(--accent-color)] rounded-full animate-[spin_1.5s_linear_infinite]"></div>
 
       <div class="relative bg-slate-900/90 border border-white/10 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-xl backdrop-blur-md">
-        <div class="text-[var(--accent-color)] animate-bounce text-center">
-          <i class="fa-solid fa-film text-3xl md:text-4xl shadow-accent-icon"></i>
+        <div class="animate-bounce flex items-center justify-center">
+          <BaseIcon 
+            icon="fa-solid fa-film" 
+            size="xl" 
+            glow 
+          />
         </div>
       </div>
     </div>
@@ -37,13 +41,15 @@
     
     <div class="mt-10 md:mt-12 w-full max-w-[240px] md:max-w-[256px] relative z-20">
       <div class="flex justify-between items-center mb-3 px-1">
-        <p class="text-[8px] md:text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest truncate max-w-[180px]">{{ loadingStatus }}</p>
+        <p class="text-[8px] md:text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest truncate max-w-[180px]">
+          {{ loadingStatus }}
+        </p>
         <p class="text-[9px] md:text-[10px] font-black text-white italic">{{ progress }}%</p>
       </div>
       
       <div class="h-1.5 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 p-[1px]">
         <div 
-          class="h-full bg-gradient-to-r from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-full transition-all duration-300 ease-out"
+          class="h-full bg-gradient-to-r from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-full transition-all duration-300 ease-out shadow-[0_0_10px_var(--accent-glow)]"
           :style="{ width: progress + '%' }"
         ></div>
       </div>
@@ -56,7 +62,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, defineAsyncComponent } from 'vue';
+
+// Lazy load BaseIcon gais
+const BaseIcon = defineAsyncComponent(() => import('./BaseIcon.vue'));
 
 const progress = ref(0);
 const loadingStatus = ref('Fetching Data...');
@@ -91,6 +100,7 @@ onMounted(() => {
     const user = JSON.parse(session);
     if (user.themeColor) {
       document.documentElement.style.setProperty('--accent-color', user.themeColor);
+      document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
     }
     if (user.lang) {
       userLang.value = user.lang;
@@ -114,11 +124,3 @@ onMounted(() => {
   }, 150);
 });
 </script>
-
-<style scoped>
-.shadow-accent-icon {
-  filter: drop-shadow(0 0 4px var(--accent-color));
-}
-.fade-in { animation: fadeIn 0.8s ease-out; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-</style>
