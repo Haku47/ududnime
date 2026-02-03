@@ -20,7 +20,7 @@ import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
 const ChatBot = defineAsyncComponent(() => import('./components/ududbot.vue'));
 
 const currentUser = ref(null);
-const currentThemeColor = ref('#f97316'); // Default Orange UDUDNIME gais
+const currentThemeColor = ref('#f97315'); // Default Orange UDUDNIME gais
 
 // --- DYNAMIC THEME ENGINE ---
 const themeStyles = computed(() => ({
