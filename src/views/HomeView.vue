@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch, defineAsyncComponent, nextTick, com
 import { useRoute, useRouter } from 'vue-router'; 
 import { animeService } from '../services/api';
 import { translations } from '../utils/i18n';
+import { supabase } from '../utils/supabase'; // Gerbang utama data kamu gais!
 
 // --- OPTIMASI: LAZY LOADING KOMPONEN ---
 const Navbar = defineAsyncComponent(() => import('../components/Navbar.vue'));
@@ -217,22 +218,61 @@ const stopAutoPlay = () => {
 };
 
 const openDetail = (anime) => { selectedAnime.value = anime; document.body.style.overflow = 'hidden'; };
-const handleLogout = () => { localStorage.removeItem('ududnime_session'); currentUser.value = null; showDashboard.value = false; toastRef.value?.addToast("BERHASIL KELUAR!", 'info', 'fa-solid fa-power-off'); };
+
+// --- 🔓 LOGIKA LOGOUT SUPABASE SAKTI GAIS ---
+const handleLogout = async () => { 
+  try {
+    if (supabase) await supabase.auth.signOut(); // Logout dari Cloud gais!
+    localStorage.removeItem('ududnime_session'); 
+    currentUser.value = null; 
+    showDashboard.value = false; 
+    toastRef.value?.addToast("BERHASIL KELUAR! SAMPAI JUMPA KER!", 'info', 'fa-solid fa-power-off'); 
+  } catch (err) {
+    toastRef.value?.addToast("GAGAL KELUAR GAIS!", "error");
+  }
+};
+
 const goHome = () => { searchQuery.value = ""; handleSearch(""); scrollToTop(); };
 
-onMounted(() => {
-  const session = localStorage.getItem('ududnime_session');
+// --- 🔄 SUPABASE SESSION SYNC GAIS ---
+const syncSupabaseUser = (session) => {
   if (session) {
-    const user = JSON.parse(session);
-    currentUser.value = user;
-    if (user.themeColor) {
-        document.documentElement.style.setProperty('--accent-color', user.themeColor);
-        document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
-    }
+    const { user } = session;
+    const mappedUser = {
+      id: user.id,
+      username: user.user_metadata.full_name || user.email.split('@')[0],
+      email: user.email,
+      avatar: user.user_metadata.avatar_url,
+      level: 1, 
+      xp: 0,
+      watchlist: [],
+      lang: 'id'
+    };
+    processUserProgress(mappedUser);
   }
+};
+
+onMounted(async () => {
+  // 1. Cek session Supabase pas baru buka gais
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) syncSupabaseUser(session);
+
+  // 2. Listener Supabase: Deteksi login GitHub gais!
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) syncSupabaseUser(session);
+    if (event === 'SIGNED_OUT') currentUser.value = null;
+  });
+
+  // 3. Cek localStorage lama gais
+  const localSession = localStorage.getItem('ududnime_session');
+  if (localSession && !currentUser.value) {
+    processUserProgress(JSON.parse(localSession));
+  }
+  
   fetchTop10();
   fetchAnimeData();
 });
+
 onUnmounted(() => stopAutoPlay());
 watch(top10Filter, () => fetchTop10());
 </script>
