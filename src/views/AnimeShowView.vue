@@ -21,7 +21,7 @@
         </div>
       </div>
 
-      <div v-else-if="anime" class="max-w-6xl mx-auto fade-in">
+      <div v-else-if="anime && anime.mal_id" class="max-w-6xl mx-auto fade-in">
         <button @click="router.back()" class="flex items-center gap-3 text-slate-500 hover:text-[var(--accent-color)] transition-all mb-8 group uppercase text-[10px] font-black tracking-widest">
           <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
           {{ t('back') || 'KEMBALI' }}
@@ -60,13 +60,13 @@
                 {{ anime.title }}
               </h1>
               <div class="flex flex-wrap items-center gap-4 text-[11px] font-black text-slate-500 uppercase tracking-widest">
-                <span class="text-[var(--accent-color)]">{{ anime.title_japanese }}</span>
+                <span class="text-[var(--accent-color)]">{{ anime.title_japanese || '???' }}</span>
                 <div class="h-1 w-1 bg-slate-800 rounded-full"></div>
-                <span>{{ anime.type }}</span>
+                <span>{{ anime.type || 'TV' }}</span>
                 <div class="h-1 w-1 bg-slate-800 rounded-full"></div>
                 <span>{{ anime.episodes || '?' }} EPS</span>
                 <div class="h-1 w-1 bg-slate-800 rounded-full"></div>
-                <span>{{ anime.status }}</span>
+                <span>{{ anime.status || 'N/A' }}</span>
               </div>
             </header>
 
@@ -105,12 +105,12 @@
     </main>
 
     <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="handleAuthSuccess" />
-    <DashboardModal v-if="showDashboard" :user="currentUser" @close="showDashboard = false" @logout="handleLogout" />
+    <DashboardModal v-if="showDashboard" :user="currentUser" @close="showDashboard = false" @logout="handleLogout" @updateUser="handleUpdateUser" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, defineAsyncComponent } from 'vue';
+import { ref, onMounted, computed, defineAsyncComponent, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { animeService } from '../services/api';
 import { translations } from '../utils/i18n';
@@ -131,19 +131,24 @@ const showDashboard = ref(false);
 
 const t = (key) => {
   const lang = currentUser.value?.lang || 'en';
-  return translations[lang][key] || key;
+  return translations[lang]?.[key] || key;
 };
 
 const isBookmarked = computed(() => {
-  return currentUser.value?.watchlist?.some(i => i.id === anime.value?.mal_id);
+  if (!currentUser.value || !anime.value) return false;
+  return currentUser.value.watchlist?.some(i => i.id === anime.value.mal_id);
 });
 
 const fetchAnimeDetail = async () => {
   const id = route.params.id;
+  if (!id) return;
   loading.value = true;
+  anime.value = null; // Reset gais biar gak ada sisa data lama
   try {
     const res = await animeService.getAnimeDetail(id);
-    anime.value = res.data;
+    if (res && res.data) {
+      anime.value = res.data;
+    }
   } catch (err) {
     console.error("SHOW_ERR", err);
   } finally {
@@ -154,6 +159,11 @@ const fetchAnimeDetail = async () => {
 const handleAuthSuccess = (user) => {
   currentUser.value = user;
   showAuth.value = false;
+};
+
+const handleUpdateUser = (updatedUser) => {
+  currentUser.value = updatedUser;
+  localStorage.setItem('ududnime_session', JSON.stringify(updatedUser));
 };
 
 const handleToggleWatchlist = () => {
@@ -173,13 +183,13 @@ const handleToggleWatchlist = () => {
   if (idx === -1) {
     user.watchlist.push(animeData);
     toastRef.value?.addToast(t('success_add'), "success");
+    user.xp = (user.xp || 0) + 10;
   } else {
     user.watchlist.splice(idx, 1);
     toastRef.value?.addToast(t('success_remove'), "info");
   }
 
-  currentUser.value = user;
-  localStorage.setItem('ududnime_session', JSON.stringify(user));
+  handleUpdateUser(user);
 };
 
 const handleLogout = () => {
@@ -187,6 +197,11 @@ const handleLogout = () => {
   currentUser.value = null;
   showDashboard.value = false;
 };
+
+// Re-fetch gais kalau route ID ganti tiba-tiba
+watch(() => route.params.id, () => {
+  fetchAnimeDetail();
+});
 
 onMounted(() => {
   const session = localStorage.getItem('ududnime_session');
