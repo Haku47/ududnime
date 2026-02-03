@@ -189,14 +189,18 @@ const handleSubmit = () => {
 };
 
 onMounted(async () => {
-  // --- 🔄 OTOMATIS TANGKAP NAMA GITHUB SETELAH REDIRECT GAIS ---
+  // --- 🔄 SOLUSI NAMA GANDA & EMAIL SPLIT GAIS ---
   const { data: { session } } = await supabase.auth.getSession();
   
   if (session) {
     const { user } = session;
+    
+    // Ambil full_name, jika null ambil potongan email gais!
+    const finalUsername = user.user_metadata.full_name || user.email.split('@')[0];
+
     const githubUser = {
       id: user.id,
-      username: user.user_metadata.full_name || user.email.split('@')[0],
+      username: finalUsername, // Gabungan logika yang kamu minta gais!
       email: user.email,
       avatar: user.user_metadata.avatar_url,
       level: 1,
@@ -210,7 +214,6 @@ onMounted(async () => {
     emit('close');
   }
 
-  // Cek apakah ada session lokal lama gais
   const localSession = localStorage.getItem('ududnime_session');
   if (localSession) {
     const user = JSON.parse(localSession);
@@ -220,7 +223,6 @@ onMounted(async () => {
     }
   }
 
-  // LOGIKA PENDETEKSI ERROR REDIRECT GAIS
   const urlParams = new URLSearchParams(window.location.hash.substring(1));
   if (urlParams.has('error_description')) {
     errorMessage.value = "GitHub Bilang: " + urlParams.get('error_description').replace(/\+/g, ' ');
