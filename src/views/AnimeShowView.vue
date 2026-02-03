@@ -105,14 +105,7 @@
     </main>
 
     <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="handleAuthSuccess" />
-    
-    <DashboardModal 
-      v-if="showDashboard" 
-      :user="currentUser" 
-      @close="showDashboard = false" 
-      @logout="handleLogout"
-      @updateUser="handleUpdateUser"
-    />
+    <DashboardModal v-if="showDashboard" :user="currentUser" @close="showDashboard = false" @logout="handleLogout" />
   </div>
 </template>
 
@@ -138,7 +131,7 @@ const showDashboard = ref(false);
 
 const t = (key) => {
   const lang = currentUser.value?.lang || 'en';
-  return translations[lang]?.[key] || key;
+  return translations[lang][key] || key;
 };
 
 const isBookmarked = computed(() => {
@@ -158,24 +151,9 @@ const fetchAnimeDetail = async () => {
   }
 };
 
-// --- 🛠️ FIX AUTH & SYNC GAIS ---
-
 const handleAuthSuccess = (user) => {
   currentUser.value = user;
   showAuth.value = false;
-  // Apply theme jika user punya warna kustom gais
-  if (user.themeColor) {
-    document.documentElement.style.setProperty('--accent-color', user.themeColor);
-  }
-};
-
-const handleUpdateUser = (updatedUser) => {
-  currentUser.value = updatedUser;
-  localStorage.setItem('ududnime_session', JSON.stringify(updatedUser));
-  // Sinkronkan tema gais
-  if (updatedUser.themeColor) {
-    document.documentElement.style.setProperty('--accent-color', updatedUser.themeColor);
-  }
 };
 
 const handleToggleWatchlist = () => {
@@ -195,14 +173,13 @@ const handleToggleWatchlist = () => {
   if (idx === -1) {
     user.watchlist.push(animeData);
     toastRef.value?.addToast(t('success_add'), "success");
-    // Tambah XP biar leveling jalan gais
-    user.xp = (user.xp || 0) + 10;
   } else {
     user.watchlist.splice(idx, 1);
     toastRef.value?.addToast(t('success_remove'), "info");
   }
 
-  handleUpdateUser(user);
+  currentUser.value = user;
+  localStorage.setItem('ududnime_session', JSON.stringify(user));
 };
 
 const handleLogout = () => {
@@ -213,14 +190,7 @@ const handleLogout = () => {
 
 onMounted(() => {
   const session = localStorage.getItem('ududnime_session');
-  if (session) {
-    const user = JSON.parse(session);
-    currentUser.value = user;
-    // Pastikan tema terpasang saat load gais
-    if (user.themeColor) {
-      document.documentElement.style.setProperty('--accent-color', user.themeColor);
-    }
-  }
+  if (session) currentUser.value = JSON.parse(session);
   fetchAnimeDetail();
 });
 </script>
