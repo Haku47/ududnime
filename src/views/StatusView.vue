@@ -6,7 +6,7 @@
           UDUD<span class="text-[var(--accent-color)] group-hover:underline decoration-4">NIME</span>
         </div>
         <div class="flex items-center gap-3">
-          <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <div :class="['h-2 w-2 rounded-full animate-pulse', apiStatus === 'online' ? 'bg-emerald-500' : 'bg-red-500']"></div>
           <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">System Monitoring Live</span>
         </div>
       </div>
@@ -97,8 +97,8 @@
           </div>
 
           <div class="flex flex-col gap-4">
-            <button @click="checkApiStatus" class="w-full py-5 bg-[var(--accent-color)] hover:opacity-90 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all shadow-xl shadow-[var(--accent-glow)] active:scale-95">
-              Re-verify Connection
+            <button @click="checkApiStatus" :disabled="apiStatus === 'checking'" class="w-full py-5 bg-[var(--accent-color)] hover:opacity-90 disabled:opacity-50 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all shadow-xl shadow-[var(--accent-glow)] active:scale-95">
+              {{ apiStatus === 'checking' ? 'Synchronizing...' : 'Re-verify Connection' }}
             </button>
             <button @click="router.push('/')" class="w-full py-5 bg-slate-800/40 hover:bg-slate-800/80 text-slate-300 font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all border border-white/5">
               Return to Dashboard
@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -125,6 +125,7 @@ const apiStatus = ref('checking');
 const apiLatency = ref(null);
 const logs = ref([]);
 const platformInfo = ref(navigator.platform);
+let statusInterval = null;
 
 const addLog = (message, type = 'info') => {
   const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
@@ -133,6 +134,8 @@ const addLog = (message, type = 'info') => {
 };
 
 const checkApiStatus = async () => {
+  if (apiStatus.value === 'checking' && logs.value.length > 0) return;
+  
   apiStatus.value = 'checking';
   addLog("Initiating handshake with Jikan API...");
   
@@ -146,11 +149,11 @@ const checkApiStatus = async () => {
       addLog(`Handshake successful. Latency: ${apiLatency.value}ms`, 'success');
     } else {
       apiStatus.value = 'offline';
-      addLog(`Handshake failed. Status: ${res.status}`, 'error');
+      addLog(`Server responded with error ${res.status}`, 'error');
     }
   } catch (err) {
     apiStatus.value = 'offline';
-    addLog("Network Error: Check your internet connection gais.", "error");
+    addLog("Network Error: Link to core server terminated gais.", "error");
   }
 };
 
@@ -163,11 +166,10 @@ const apiStatusLabel = computed(() => {
 const apiStatusColor = computed(() => {
   if (apiStatus.value === 'online') return 'bg-emerald-500/10 border-emerald-500 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]';
   if (apiStatus.value === 'offline') return 'bg-red-500/10 border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]';
-  return 'bg-slate-800 border-white/5 text-slate-500';
+  return 'bg-slate-800 border-white/5 text-slate-500 animate-pulse';
 });
 
 onMounted(() => {
-  // Sync tema dari localStorage gais
   const session = localStorage.getItem('ududnime_session');
   if (session) {
     const user = JSON.parse(session);
@@ -178,8 +180,13 @@ onMounted(() => {
   }
 
   checkApiStatus();
-  // Auto refresh log gais tiap 60 detik
-  setInterval(checkApiStatus, 60000);
+  // Simpan interval ke variabel agar bisa dibersihkan gais
+  statusInterval = setInterval(checkApiStatus, 60000);
+});
+
+// Penting: Bersihkan interval saat user pindah halaman gais biar laptop gak berat!
+onUnmounted(() => {
+  if (statusInterval) clearInterval(statusInterval);
 });
 </script>
 
@@ -187,8 +194,10 @@ onMounted(() => {
 .fade-in { animation: fadeIn 0.8s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Neon Glow Effect Sync */
 .shadow-xl {
   box-shadow: 0 10px 30px var(--accent-glow);
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
