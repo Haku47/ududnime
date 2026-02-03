@@ -15,12 +15,13 @@
 
 <script setup>
 import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
+import { supabase } from './utils/supabase'; // Gerbang data sakti kamu gais!
 
 // Lazy load biar aplikasi tetep ngebut gais
 const ChatBot = defineAsyncComponent(() => import('./components/ududbot.vue'));
 
 const currentUser = ref(null);
-const currentThemeColor = ref('#f97315'); // Default Orange UDUDNIME gais
+const currentThemeColor = ref('#f97316'); // Default Orange UDUDNIME gais
 
 // --- DYNAMIC THEME ENGINE ---
 const themeStyles = computed(() => ({
@@ -37,6 +38,31 @@ const updateUserData = () => {
     currentUser.value = user;
     // Set warna tema kalau user sudah pernah milih gais
     if (user.themeColor) currentThemeColor.value = user.themeColor;
+  } else {
+    currentUser.value = null;
+  }
+};
+
+// --- 🌐 SUPABASE AUTO-REFRESH SESSION ENGINE ---
+const syncSupabaseSession = (session) => {
+  if (session) {
+    const { user } = session;
+    // Gunakan logika gabungan: Nama Full GitHub atau Potongan Email gais!
+    const finalUsername = user.user_metadata.full_name || user.email.split('@')[0];
+    
+    const mappedUser = {
+      id: user.id,
+      username: finalUsername,
+      email: user.email,
+      avatar: user.user_metadata.avatar_url,
+      level: 1, 
+      xp: 0,
+      watchlist: [],
+      provider: 'github'
+    };
+    
+    localStorage.setItem('ududnime_session', JSON.stringify(mappedUser));
+    updateUserData();
   }
 };
 
@@ -69,9 +95,36 @@ const handleGlobalWatchlist = (animeData) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   updateUserData();
-  // Listener biar kalau tab lain update profil, App.vue ikut ganti warna gais
+
+  // 1. Cek session Supabase Cloud gais
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    // Jika error 401, bersihkan session basi secara otomatis gais!
+    if (error) {
+      console.warn("Session basi terdeteksi gais, cleaning up...");
+      localStorage.removeItem('ududnime_session');
+      updateUserData();
+    } else if (session) {
+      syncSupabaseSession(session);
+    }
+  } catch (e) {
+    console.error("Auth check failed gais");
+  }
+
+  // 2. Listener Auth Change: Tangkap redirect GitHub secara real-time gais!
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      syncSupabaseSession(session);
+    } else {
+      localStorage.removeItem('ududnime_session');
+      updateUserData();
+    }
+  });
+
+  // 3. Listener biar kalau tab lain update profil, App.vue ikut ganti warna gais
   window.addEventListener('storage', (e) => {
     if (e.key === 'ududnime_session') updateUserData();
   });
