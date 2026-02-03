@@ -111,10 +111,10 @@ const t = (key) => {
   return translations[lang][key] || key;
 };
 
+// --- 🌐 LOGIKA REDIRECT GITHUB TETAP AMAN GAIS ---
 const handleGitHubLogin = async () => {
-  // Pengecekan Supabase URL sebelum eksekusi gais
   if (!supabase) {
-    errorMessage.value = "Sabar gais, koneksi database belum siap.";
+    errorMessage.value = "Koneksi database pingsan gais, cek .env.";
     return;
   }
 
@@ -123,7 +123,8 @@ const handleGitHubLogin = async () => {
       provider: 'github',
       options: {
         scopes: 'read:user',
-        redirectTo: window.location.origin
+        // Gunakan origin agar dinamis mengikuti Vercel/Localhost gais!
+        redirectTo: window.location.origin 
       }
     });
     if (error) throw error;
@@ -190,6 +191,7 @@ const handleSubmit = () => {
 };
 
 onMounted(() => {
+  // Cek apakah ada session lama gais
   const session = localStorage.getItem('ududnime_session');
   if (session) {
     const user = JSON.parse(session);
@@ -197,6 +199,12 @@ onMounted(() => {
       document.documentElement.style.setProperty('--accent-color', user.themeColor);
       document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
     }
+  }
+
+  // LOGIKA PENDETEKSI ERROR REDIRECT GAIS
+  const urlParams = new URLSearchParams(window.location.hash.substring(1));
+  if (urlParams.has('error_description')) {
+    errorMessage.value = "GitHub Bilang: " + urlParams.get('error_description').replace(/\+/g, ' ');
   }
 });
 </script>
