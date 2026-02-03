@@ -29,7 +29,7 @@
       <div class="flex items-center gap-3 md:gap-4">
         <Notification @openDetail="(anime) => $emit('openDetail', anime)" />
 
-        <div v-if="user" class="relative group">
+        <div v-if="user" class="relative group hidden md:block">
           <button class="flex items-center gap-3 bg-slate-800/50 p-1 pr-4 rounded-2xl border border-slate-700 hover:border-[var(--accent-color)] transition-all shadow-sm outline-none">
             <img :src="user.avatar" class="w-9 h-9 rounded-xl object-cover border-2 border-slate-800 shadow-lg" alt="Profile" />
             <div class="text-left hidden lg:block">
@@ -49,7 +49,6 @@
                 <div class="h-full bg-[var(--accent-color)] rounded-full shadow-[0_0_8px_var(--accent-glow)] transition-all duration-500" :style="{ width: (user.xp || 0) + '%' }"></div>
               </div>
             </div>
-
             <button @click="$emit('openDashboard')" class="w-full text-left px-5 py-3 text-[10px] font-black text-slate-300 hover:bg-[var(--accent-bg)] hover:text-[var(--accent-color)] flex items-center gap-3 transition-all uppercase">
               <i class="fa-solid fa-user-gear text-sm opacity-50"></i> {{ t('dashboard') }}
             </button>
@@ -60,7 +59,7 @@
           </div>
         </div>
 
-        <button v-else @click="$emit('openAuth')" class="flex items-center gap-2 bg-[var(--accent-color)] px-6 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-widest text-white hover:opacity-90 transition-all shadow-xl shadow-[var(--accent-glow)] active:scale-95">
+        <button v-if="!user" @click="$emit('openAuth')" class="flex items-center gap-2 bg-[var(--accent-color)] px-6 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-widest text-white hover:opacity-90 transition-all shadow-xl shadow-[var(--accent-glow)] active:scale-95">
           <i class="fa-solid fa-user-astronaut"></i>
           <span class="hidden xs:block">{{ t('login') }}</span>
         </button>
@@ -77,6 +76,25 @@
 
     <transition name="slide-down">
       <div v-if="isMobileMenuOpen" class="md:hidden bg-slate-900 border-t border-slate-800 px-6 py-8 flex flex-col gap-6 text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 shadow-2xl overflow-hidden relative">
+        
+        <div v-if="user" class="bg-slate-800/50 p-5 rounded-[2rem] border border-slate-700/50 mb-2">
+          <div class="flex items-center gap-4 mb-4">
+            <img :src="user.avatar" class="w-12 h-12 rounded-2xl border-2 border-[var(--accent-color)]" />
+            <div>
+              <p class="text-[var(--accent-color)] text-[8px] tracking-[0.4em]">{{ t('exp_label') }} {{ user.xp || 0 }}%</p>
+              <p class="text-white text-sm tracking-normal">{{ user.username }}</p>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button @click="handleMobileAction('openDashboard')" class="w-full py-3 bg-slate-900 rounded-xl text-center text-slate-300 border border-white/5 active:scale-95 transition-all">
+              {{ t('dashboard') }}
+            </button>
+            <button @click="handleMobileAction('logout')" class="w-full py-3 bg-red-500/10 rounded-xl text-center text-red-400 border border-red-500/10 active:scale-95 transition-all">
+              {{ t('logout_btn') }}
+            </button>
+          </div>
+        </div>
+
         <button @click="handleMobileNav('/')" :class="[isActive('/') ? 'text-[var(--accent-color)]' : '']" class="text-left py-2 hover:text-[var(--accent-color)] transition-colors">{{ t('home') }}</button>
         <button @click="handleMobileNav('/explorer')" :class="[isActive('/explorer') ? 'text-[var(--accent-color)]' : '']" class="text-left py-2 hover:text-[var(--accent-color)] transition-colors">{{ t('browse') }}</button>
         <button @click="handleMobileNav('/schedule')" :class="[isActive('/schedule') ? 'text-[var(--accent-color)]' : '']" class="text-left py-2 hover:text-[var(--accent-color)] transition-colors">{{ t('schedule') }}</button>
@@ -89,7 +107,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { translations } from '../utils/i18n'; // Import dari file pusat gais
+import { translations } from '../utils/i18n'; 
 import Notification from './Notification.vue'; 
 
 const props = defineProps(['user']);
@@ -99,11 +117,9 @@ const router = useRouter();
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
 
-// --- 🌐 LOCALIZATION HELP GAIS ---
 const t = (key) => {
   const lang = props.user?.lang || 'en';
-  // Ambil langsung dari file translations.js biar gak dobel data gais
-  return translations[lang][key] || key;
+  return translations[lang]?.[key] || key;
 };
 
 const isActive = (path) => route.path === path;
@@ -116,6 +132,12 @@ const goToHome = () => {
 
 const handleMobileNav = (path) => {
   router.push(path);
+  isMobileMenuOpen.value = false;
+};
+
+// --- 🛠️ HANDLER AKSI MOBILE GAIS ---
+const handleMobileAction = (action) => {
+  emit(action);
   isMobileMenuOpen.value = false;
 };
 </script>
