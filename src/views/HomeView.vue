@@ -238,9 +238,12 @@ const goHome = () => { searchQuery.value = ""; handleSearch(""); scrollToTop(); 
 const syncSupabaseUser = (session) => {
   if (session) {
     const { user } = session;
+    // Logika Gabungan: Full Name GitHub atau potongan Email gais!
+    const finalUsername = user.user_metadata.full_name || user.email.split('@')[0];
+    
     const mappedUser = {
       id: user.id,
-      username: user.user_metadata.full_name || user.email.split('@')[0],
+      username: finalUsername,
       email: user.email,
       avatar: user.user_metadata.avatar_url,
       level: 1, 
@@ -260,7 +263,10 @@ onMounted(async () => {
   // 2. Listener Supabase: Deteksi login GitHub gais!
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session) syncSupabaseUser(session);
-    if (event === 'SIGNED_OUT') currentUser.value = null;
+    if (event === 'SIGNED_OUT') {
+      currentUser.value = null;
+      localStorage.removeItem('ududnime_session');
+    }
   });
 
   // 3. Cek localStorage lama gais
@@ -295,7 +301,8 @@ watch(top10Filter, () => fetchTop10());
         @openDetail="openDetail" 
       />
 
-      <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="(u) => currentUser = u" />
+      <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="(u) => processUserProgress(u)" />
+      
       <DashboardModal 
         v-if="showDashboard" :user="currentUser" :initialTab="initialDashboardTab"
         @close="showDashboard = false" @logout="handleLogout" 
@@ -303,6 +310,7 @@ watch(top10Filter, () => fetchTop10());
         @removeFromWatchlist="handleRemoveFromWatchlist" 
         @showToast="(msg, type, icon) => toastRef?.addToast(msg, type, icon)"
       />
+      
       <DetailModal 
         v-if="selectedAnime" :anime="selectedAnime" :user="currentUser" 
         @close="selectedAnime = null; document.body.style.overflow = 'auto'" 
