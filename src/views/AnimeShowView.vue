@@ -4,10 +4,9 @@
     
     <Navbar 
       :user="currentUser" 
-      @openAuth="showAuth = true"
       @openDashboard="showDashboard = true"
       @logout="handleLogout"
-      @goHome="router.push('/')"
+      @openAuth="showAuth = true"
     />
 
     <main class="container mx-auto px-4 py-12 md:py-24">
@@ -24,7 +23,7 @@
 
       <div v-else-if="anime" class="max-w-6xl mx-auto fade-in">
         <button @click="router.back()" class="flex items-center gap-3 text-slate-500 hover:text-[var(--accent-color)] transition-all mb-8 group uppercase text-[10px] font-black tracking-widest">
-          <BaseIcon icon="fa-solid fa-arrow-left" size="xs" wrapper-class="group-hover:-translate-x-1 transition-transform" />
+          <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
           {{ t('back') || 'KEMBALI' }}
         </button>
 
@@ -34,25 +33,13 @@
               <div class="relative group">
                 <img :src="anime.images?.jpg?.large_image_url" class="w-full rounded-[3rem] border border-white/5 shadow-2xl group-hover:border-[var(--accent-color)] transition-all duration-500" />
                 <div class="absolute inset-0 rounded-[3rem] bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                
-                <div class="absolute bottom-6 left-6 right-6 flex justify-between items-center">
-                  <BaseBadge variant="primary" size="sm" glow>{{ anime.type }}</BaseBadge>
-                  <BaseBadge variant="glass" size="sm">{{ anime.status }}</BaseBadge>
-                </div>
               </div>
 
-              <BaseButton 
-                @click="handleToggleWatchlist" 
-                :variant="isBookmarked ? 'secondary' : 'primary'"
-                size="lg"
-                class="w-full"
-                :class="{ '!text-emerald-500 !border-emerald-500/30': isBookmarked }"
-              >
-                <template #icon-left>
-                  <BaseIcon :icon="isBookmarked ? 'fa-solid fa-check' : 'fa-solid fa-plus'" size="sm" />
-                </template>
+              <button @click="handleToggleWatchlist" class="w-full py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95"
+                :class="isBookmarked ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/30' : 'bg-[var(--accent-color)] text-white shadow-[var(--accent-glow)]'">
+                <i :class="['fa-solid', isBookmarked ? 'fa-check' : 'fa-plus']"></i>
                 {{ isBookmarked ? t('in_watchlist') : t('add_watchlist') }}
-              </BaseButton>
+              </button>
               
               <div class="grid grid-cols-2 gap-3">
                 <div class="bg-slate-900/40 p-4 rounded-2xl border border-white/5 text-center">
@@ -75,9 +62,11 @@
               <div class="flex flex-wrap items-center gap-4 text-[11px] font-black text-slate-500 uppercase tracking-widest">
                 <span class="text-[var(--accent-color)]">{{ anime.title_japanese }}</span>
                 <div class="h-1 w-1 bg-slate-800 rounded-full"></div>
-                <span>{{ anime.duration || 'N/A' }}</span>
+                <span>{{ anime.type }}</span>
                 <div class="h-1 w-1 bg-slate-800 rounded-full"></div>
-                <span>{{ anime.aired?.string || 'Unknown' }}</span>
+                <span>{{ anime.episodes || '?' }} EPS</span>
+                <div class="h-1 w-1 bg-slate-800 rounded-full"></div>
+                <span>{{ anime.status }}</span>
               </div>
             </header>
 
@@ -96,9 +85,9 @@
               <div>
                 <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 italic">{{ t('categories') }}</h3>
                 <div class="flex flex-wrap gap-2">
-                  <BaseBadge v-for="genre in anime.genres" :key="genre.mal_id" variant="glass" size="md">
+                  <span v-for="genre in anime.genres" :key="genre.mal_id" class="px-5 py-2 rounded-xl bg-slate-800/40 border border-white/5 text-[10px] font-black text-slate-300 uppercase hover:border-[var(--accent-color)] hover:text-white transition-all cursor-default">
                     {{ genre.name }}
-                  </BaseBadge>
+                  </span>
                 </div>
               </div>
             </div>
@@ -107,15 +96,16 @@
       </div>
 
       <div v-else class="py-40 text-center">
-        <BaseIcon icon="fa-solid fa-ghost" size="2xl" wrapper-class="mb-6 opacity-20" />
+        <i class="fa-solid fa-ghost text-5xl text-slate-800 mb-6 block"></i>
         <h2 class="text-2xl font-black text-white uppercase italic">{{ t('empty') }}</h2>
-        <BaseButton @click="router.push('/')" variant="secondary" class="mt-8">
+        <button @click="router.push('/')" class="mt-8 px-10 py-4 bg-slate-800 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[var(--accent-color)] transition-all">
           {{ t('back_home') }}
-        </BaseButton>
+        </button>
       </div>
     </main>
 
     <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="handleAuthSuccess" />
+    
     <DashboardModal 
       v-if="showDashboard" 
       :user="currentUser" 
@@ -131,16 +121,11 @@ import { ref, onMounted, computed, defineAsyncComponent } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { animeService } from '../services/api';
 import { translations } from '../utils/i18n';
-import { supabase } from '../utils/supabase';
 
-// Lazy load komponen gais
 const Navbar = defineAsyncComponent(() => import('../components/Navbar.vue'));
 const AuthModal = defineAsyncComponent(() => import('../components/AuthModal.vue'));
 const DashboardModal = defineAsyncComponent(() => import('../components/DashboardModal.vue'));
 const Toast = defineAsyncComponent(() => import('../components/Toast.vue'));
-const BaseButton = defineAsyncComponent(() => import('../components/BaseButton.vue'));
-const BaseBadge = defineAsyncComponent(() => import('../components/BaseBadge.vue'));
-const BaseIcon = defineAsyncComponent(() => import('../components/BaseIcon.vue'));
 
 const route = useRoute();
 const router = useRouter();
@@ -160,33 +145,6 @@ const isBookmarked = computed(() => {
   return currentUser.value?.watchlist?.some(i => i.id === anime.value?.mal_id);
 });
 
-// --- 🔐 LOGIKA AUTH SYNC GAIS ---
-const handleAuthSuccess = (user) => {
-  currentUser.value = user;
-  showAuth.value = false;
-  // Apply theme jika ada gais
-  if (user.themeColor) {
-    document.documentElement.style.setProperty('--accent-color', user.themeColor);
-  }
-};
-
-const handleUpdateUser = (updatedUser) => {
-  currentUser.value = updatedUser;
-  localStorage.setItem('ududnime_session', JSON.stringify(updatedUser));
-};
-
-const handleLogout = async () => {
-  try {
-    if (supabase) await supabase.auth.signOut();
-    localStorage.removeItem('ududnime_session');
-    currentUser.value = null;
-    showDashboard.value = false;
-    toastRef.value?.addToast("LOGOUT BERHASIL!", "info");
-  } catch (err) {
-    console.error("LOGOUT_ERR");
-  }
-};
-
 const fetchAnimeDetail = async () => {
   const id = route.params.id;
   loading.value = true;
@@ -200,6 +158,26 @@ const fetchAnimeDetail = async () => {
   }
 };
 
+// --- 🛠️ FIX AUTH & SYNC GAIS ---
+
+const handleAuthSuccess = (user) => {
+  currentUser.value = user;
+  showAuth.value = false;
+  // Apply theme jika user punya warna kustom gais
+  if (user.themeColor) {
+    document.documentElement.style.setProperty('--accent-color', user.themeColor);
+  }
+};
+
+const handleUpdateUser = (updatedUser) => {
+  currentUser.value = updatedUser;
+  localStorage.setItem('ududnime_session', JSON.stringify(updatedUser));
+  // Sinkronkan tema gais
+  if (updatedUser.themeColor) {
+    document.documentElement.style.setProperty('--accent-color', updatedUser.themeColor);
+  }
+};
+
 const handleToggleWatchlist = () => {
   if (!currentUser.value) { showAuth.value = true; return; }
   
@@ -210,28 +188,38 @@ const handleToggleWatchlist = () => {
     id: anime.value.mal_id,
     title: anime.value.title,
     image: anime.value.images?.jpg?.image_url,
-    type: anime.value.type
+    genres: anime.value.genres
   };
 
   const idx = user.watchlist.findIndex(i => i.id === animeData.id);
   if (idx === -1) {
     user.watchlist.push(animeData);
-    toastRef.value?.addToast("DITAMBAHKAN KE LIST!", "success");
-    // Gain XP kecil buat interaksi gais
+    toastRef.value?.addToast(t('success_add'), "success");
+    // Tambah XP biar leveling jalan gais
     user.xp = (user.xp || 0) + 10;
   } else {
     user.watchlist.splice(idx, 1);
-    toastRef.value?.addToast("DIHAPUS DARI LIST!", "info");
+    toastRef.value?.addToast(t('success_remove'), "info");
   }
 
   handleUpdateUser(user);
+};
+
+const handleLogout = () => {
+  localStorage.removeItem('ududnime_session');
+  currentUser.value = null;
+  showDashboard.value = false;
 };
 
 onMounted(() => {
   const session = localStorage.getItem('ududnime_session');
   if (session) {
     const user = JSON.parse(session);
-    handleAuthSuccess(user);
+    currentUser.value = user;
+    // Pastikan tema terpasang saat load gais
+    if (user.themeColor) {
+      document.documentElement.style.setProperty('--accent-color', user.themeColor);
+    }
   }
   fetchAnimeDetail();
 });
