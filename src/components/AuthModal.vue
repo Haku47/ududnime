@@ -94,7 +94,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { translations } from '../utils/i18n';
-import { supabase } from '../utils/supabase'; // Pastikan file ini sudah ada gais
+import { supabase } from '../utils/supabase';
 
 const props = defineProps(['user']);
 const emit = defineEmits(['close', 'authSuccess']);
@@ -111,8 +111,13 @@ const t = (key) => {
   return translations[lang][key] || key;
 };
 
-// --- 🌐 LOGIKA GITHUB LOGIN SAKTI GAIS ---
 const handleGitHubLogin = async () => {
+  // Pengecekan Supabase URL sebelum eksekusi gais
+  if (!supabase) {
+    errorMessage.value = "Sabar gais, koneksi database belum siap.";
+    return;
+  }
+
   try {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
