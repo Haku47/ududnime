@@ -1,5 +1,27 @@
 {
   "appId": "com.ududnime.app",
-  "appName": "ududnime",
-  "webDir": "dist"
+  "appName": "Ududnime",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "api.jikan.moe",
+      "*.supabase.co",
+      "api.dicebear.com"
+    ]
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#020617",
+      "showSpinner": true,
+      "androidSpinnerStyle": "large",
+      "spinnerColor": "#f97316"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "dark"
+    }
+  }
 }
