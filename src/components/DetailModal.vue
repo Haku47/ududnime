@@ -79,13 +79,7 @@
           <div>
             <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 italic">{{ t('categories') }}</h3>
             <div class="flex flex-wrap gap-1.5">
-              <BaseBadge 
-                v-for="genre in anime.genres" 
-                :key="genre.mal_id"
-                variant="glass"
-                size="xs"
-                class="hover:border-[var(--accent-color)] hover:text-white cursor-default"
-              >
+              <BaseBadge v-for="genre in anime.genres" :key="genre.mal_id" variant="glass" size="xs" class="hover:border-[var(--accent-color)] hover:text-white cursor-default">
                 {{ genre.name }}
               </BaseBadge>
             </div>
@@ -121,7 +115,6 @@
 import { computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue';
 import { translations } from '../utils/i18n';
 
-// Lazy load komponen Base gais
 const BaseButton = defineAsyncComponent(() => import('./BaseButton.vue'));
 const BaseBadge = defineAsyncComponent(() => import('./BaseBadge.vue'));
 const BaseIcon = defineAsyncComponent(() => import('./BaseIcon.vue'));
@@ -139,9 +132,7 @@ const isBookmarked = computed(() => {
   return props.user.watchlist.some(item => item.id === props.anime.mal_id);
 });
 
-const handleClose = () => {
-  emit('close');
-};
+const handleClose = () => emit('close');
 
 const handleWatchlist = () => {
   if (!props.user) {
@@ -168,19 +159,19 @@ const shareAction = (platform) => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
   } else if (platform === 'copy') {
     navigator.clipboard.writeText(shareUrl);
-    // Kita panggil toast di sini nanti gais!
+    
+    // --- 🚀 MODIFIKASI: TRIGER TOAST "SHOW ME" GAIS ---
+    // Kita kirim pesan mbois berisi judul anime-nya gais
+    const toastMessage = `${props.anime.title} Link Copied! 🚀`;
+    emit('addToast', toastMessage, 'success');
   }
 };
 
 onMounted(() => {
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = 'hidden';
-  }
+  if (typeof document !== 'undefined') document.body.style.overflow = 'hidden';
 });
 
 onUnmounted(() => {
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = '';
-  }
+  if (typeof document !== 'undefined') document.body.style.overflow = '';
 });
 </script>
