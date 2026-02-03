@@ -111,7 +111,6 @@ const t = (key) => {
   return translations[lang][key] || key;
 };
 
-// --- 🌐 LOGIKA REDIRECT GITHUB TETAP AMAN GAIS ---
 const handleGitHubLogin = async () => {
   if (!supabase) {
     errorMessage.value = "Koneksi database pingsan gais, cek .env.";
@@ -123,7 +122,6 @@ const handleGitHubLogin = async () => {
       provider: 'github',
       options: {
         scopes: 'read:user',
-        // Gunakan origin agar dinamis mengikuti Vercel/Localhost gais!
         redirectTo: window.location.origin 
       }
     });
@@ -190,11 +188,32 @@ const handleSubmit = () => {
   }
 };
 
-onMounted(() => {
-  // Cek apakah ada session lama gais
-  const session = localStorage.getItem('ududnime_session');
+onMounted(async () => {
+  // --- 🔄 OTOMATIS TANGKAP NAMA GITHUB SETELAH REDIRECT GAIS ---
+  const { data: { session } } = await supabase.auth.getSession();
+  
   if (session) {
-    const user = JSON.parse(session);
+    const { user } = session;
+    const githubUser = {
+      id: user.id,
+      username: user.user_metadata.full_name || user.email.split('@')[0],
+      email: user.email,
+      avatar: user.user_metadata.avatar_url,
+      level: 1,
+      xp: 0,
+      watchlist: [],
+      provider: 'github'
+    };
+    
+    localStorage.setItem('ududnime_session', JSON.stringify(githubUser));
+    emit('authSuccess', githubUser);
+    emit('close');
+  }
+
+  // Cek apakah ada session lokal lama gais
+  const localSession = localStorage.getItem('ududnime_session');
+  if (localSession) {
+    const user = JSON.parse(localSession);
     if (user.themeColor) {
       document.documentElement.style.setProperty('--accent-color', user.themeColor);
       document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
