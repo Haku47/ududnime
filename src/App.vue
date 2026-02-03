@@ -15,6 +15,7 @@
 
 <script setup>
 import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
+import { supabase } from './utils/supabase'; // Import gerbang database kamu gais!
 
 // Lazy load biar aplikasi tetep ngebut gais
 const ChatBot = defineAsyncComponent(() => import('./components/ududbot.vue'));
@@ -37,6 +38,29 @@ const updateUserData = () => {
     currentUser.value = user;
     // Set warna tema kalau user sudah pernah milih gais
     if (user.themeColor) currentThemeColor.value = user.themeColor;
+  } else {
+    currentUser.value = null;
+  }
+};
+
+// --- 🌐 SUPABASE SESSION SYNC GAIS ---
+const syncSupabaseSession = (session) => {
+  if (session) {
+    // Ambil data dari metadata GitHub gais!
+    const { user } = session;
+    const supabaseUser = {
+      id: user.id,
+      username: user.user_metadata.full_name || user.email.split('@')[0],
+      email: user.email,
+      avatar: user.user_metadata.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.id}`,
+      level: 1, 
+      xp: 0,
+      watchlist: [],
+      provider: 'github'
+    };
+    
+    localStorage.setItem('ududnime_session', JSON.stringify(supabaseUser));
+    updateUserData();
   }
 };
 
@@ -60,6 +84,7 @@ const handleGlobalWatchlist = (animeData) => {
     currentUser.value = user;
     localStorage.setItem('ududnime_session', JSON.stringify(user));
     
+    // Sinkronisasi ke database lokal gais
     const allUsers = JSON.parse(localStorage.getItem('ududnime_users') || '[]');
     const idx = allUsers.findIndex(u => u.email === user.email);
     if (idx !== -1) {
@@ -69,9 +94,25 @@ const handleGlobalWatchlist = (animeData) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   updateUserData();
-  // Listener biar kalau tab lain update profil, App.vue ikut ganti warna gais
+
+  // 1. Cek session Supabase pas baru buka gais
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) syncSupabaseSession(session);
+
+  // 2. Listener Supabase: Otomatis deteksi kalau user login/logout gais!
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      syncSupabaseSession(session);
+    } else {
+      // Kalau logout, hapus session lokal gais
+      localStorage.removeItem('ududnime_session');
+      updateUserData();
+    }
+  });
+
+  // 3. Listener Storage (Tab Lain) gais
   window.addEventListener('storage', (e) => {
     if (e.key === 'ududnime_session') updateUserData();
   });
