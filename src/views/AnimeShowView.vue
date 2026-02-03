@@ -22,7 +22,7 @@
       </div>
 
       <div v-else-if="anime && anime.mal_id" class="max-w-6xl mx-auto fade-in">
-        <button @click="router.back()" class="flex items-center gap-3 text-slate-500 hover:text-[var(--accent-color)] transition-all mb-8 group uppercase text-[10px] font-black tracking-widest">
+        <button @click="router.push('/')" class="flex items-center gap-3 text-slate-500 hover:text-[var(--accent-color)] transition-all mb-8 group uppercase text-[10px] font-black tracking-widest">
           <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
           {{ t('back') || 'KEMBALI' }}
         </button>
@@ -140,10 +140,22 @@ const isBookmarked = computed(() => {
 });
 
 const fetchAnimeDetail = async () => {
-  const id = route.params.id;
-  if (!id) return;
+  // --- 🛠️ FIX IDENTIFIKASI ID GAIS ---
+  let id = route.params.id;
+  
+  // Jika ID mengandung titik dua (kesalahan routing), bersihkan gais!
+  if (id && id.includes(':')) {
+    id = id.replace(/:/g, '');
+  }
+
+  // Jika ID tidak valid (bukan angka), lempar ke Home gais
+  if (!id || isNaN(id)) {
+    router.push('/');
+    return;
+  }
+
   loading.value = true;
-  anime.value = null; // Reset gais biar gak ada sisa data lama
+  anime.value = null; 
   try {
     const res = await animeService.getAnimeDetail(id);
     if (res && res.data) {
@@ -151,6 +163,7 @@ const fetchAnimeDetail = async () => {
     }
   } catch (err) {
     console.error("SHOW_ERR", err);
+    anime.value = null;
   } finally {
     loading.value = false;
   }
@@ -198,7 +211,6 @@ const handleLogout = () => {
   showDashboard.value = false;
 };
 
-// Re-fetch gais kalau route ID ganti tiba-tiba
 watch(() => route.params.id, () => {
   fetchAnimeDetail();
 });

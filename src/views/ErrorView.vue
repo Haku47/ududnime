@@ -3,14 +3,18 @@
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--accent-glow)] opacity-10 rounded-full blur-[120px]"></div>
 
     <div class="relative fade-in">
-      <div class="inline-block p-8 bg-slate-900 border border-slate-800 rounded-[3rem] shadow-2xl mb-10">
-        <i class="fa-solid fa-bug text-6xl text-[var(--accent-color)] animate-bounce shadow-icon"></i>
+      <div class="inline-block p-8 bg-slate-900 border border-slate-800 rounded-[3rem] shadow-2xl mb-10 group">
+        <i class="fa-solid fa-bug text-6xl text-[var(--accent-color)] animate-bounce shadow-icon group-hover:scale-110 transition-transform"></i>
       </div>
       
-      <h1 class="text-7xl md:text-9xl font-black text-white italic tracking-tighter mb-4 opacity-20">404</h1>
+      <h1 class="text-7xl md:text-9xl font-black text-white italic tracking-tighter mb-4 opacity-20 select-none animate-pulse">
+        404
+      </h1>
+      
       <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-6">
         DATA <span class="text-[var(--accent-color)]">HILANG</span> DARI RADAR!
       </h2>
+      
       <p class="text-slate-500 text-xs md:text-sm font-black uppercase tracking-[0.3em] max-w-md mx-auto leading-loose mb-12">
         Mungkin animenya sudah tamat atau link yang kamu cari diculik oleh villain gais.
       </p>
@@ -19,28 +23,37 @@
         @click="router.push('/')" 
         class="px-10 py-5 bg-[var(--accent-color)] hover:opacity-90 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all shadow-xl shadow-[var(--accent-glow)] active:scale-95"
       >
-        ← BALIK KE BASE
+        ← {{ t_back || 'BALIK KE BASE' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { translations } from '../utils/i18n';
 
 const router = useRouter();
+const t_back = ref('');
 
 onMounted(() => {
-  // Pastikan tema tetap sinkron saat masuk halaman error gais
+  // 1. Sync Tema dari LocalStorage gais
   const session = localStorage.getItem('ududnime_session');
+  let lang = 'en';
+
   if (session) {
     const user = JSON.parse(session);
+    lang = user.lang || 'en';
     if (user.themeColor) {
       document.documentElement.style.setProperty('--accent-color', user.themeColor);
+      // Generate glow otomatis dari warna user gais
       document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
     }
   }
+
+  // 2. Localization untuk tombol gais
+  t_back.value = translations[lang]?.['back_home'] || 'BALIK KE BASE';
 });
 </script>
 
@@ -50,5 +63,14 @@ onMounted(() => {
 
 .shadow-icon {
   filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+/* Tambahan: Animasi detak jantung buat teks 404 gais */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
 }
 </style>
