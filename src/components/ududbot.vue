@@ -3,7 +3,8 @@ import { ref, nextTick } from 'vue';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { marked } from 'marked';
 
-const props = defineProps(['user']);
+// --- 🛠️ PERBAIKAN: TAMBAHKAN PROP LOADING GAIS ---
+const props = defineProps(['user', 'loading']); 
 const isOpen = ref(false);
 const userInput = ref('');
 const isTyping = ref(false);
@@ -85,7 +86,7 @@ const handleInput = async (forcedInput = null) => {
 </script>
 
 <template>
-  <div class="fixed bottom-8 left-8 z-[150] flex flex-col items-start gap-3 font-inter text-white" v-click-outside="closeBot">
+  <div v-if="!loading" class="fixed bottom-8 left-8 z-[150] flex flex-col items-start gap-3 font-inter text-white" v-click-outside="closeBot">
     <transition name="slide-up">
       <div v-if="isOpen" class="w-[300px] md:w-[350px] h-[520px] bg-slate-900/80 border border-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl flex flex-col overflow-hidden relative">
         <div class="absolute -top-10 -right-10 w-32 h-32 bg-[var(--accent-color)] opacity-10 rounded-full blur-[50px]"></div>

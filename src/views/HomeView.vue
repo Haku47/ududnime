@@ -425,6 +425,8 @@ watch(top10Filter, () => fetchTop10());
   </div>
 </template>
 
+<UdudBotAI :user="currentUser" :loading="loading" />
+
 <style scoped>
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .fade-in { animation: fadeIn 0.8s ease-out; }
