@@ -1,8 +1,11 @@
 export const translations = {
   en: {
-    // Hero & Tagline
+    // --- 🚀 HERO & TAGLINE ---
     tagline: "Modern anime catalog to accompany your chill time gais.",
-    // Menu & General
+    welcome: "WELCOME BACK",
+    welcome_sub: "Ready to continue your journey?",
+
+    // --- 🛰️ MENU & NAVIGATION ---
     home: "HOME",
     browse: "BROWSE",
     schedule: "SCHEDULE",
@@ -10,9 +13,18 @@ export const translations = {
     dashboard: "DASHBOARD",
     logout: "LOGOUT",
     login: "LOGIN",
-    welcome: "WELCOME BACK",
     member: "MEMBER SINCE",
-    // Watchlist & Stats
+    return_home: "RETURN TO HOME",
+
+    // --- 🌌 SPECIAL CATEGORIES ---
+    explore_universe: "EXPLORE UNIVERSE",
+    top_10_trending: "TOP 10 TRENDING",
+    trending_title: "Trending",
+    filter_today: "Today",
+    filter_weekly: "Week",
+    filter_monthly: "Month",
+
+    // --- 📊 WATCHLIST & STATS ---
     watchlist: "WATCHLIST",
     stats: "STATS",
     empty: "NO DATA FOUND GAIS.",
@@ -20,8 +32,19 @@ export const translations = {
     analytics_sub: "Genre preferences based on your collection.",
     empty_stats: "No statistical data yet.",
     exp_label: "XP PROGRESS",
-    // Settings & Personalization
+    rank_title: "RANK TITLE",
+    rank_titles: {
+      novice: "ROOKIE",
+      apprentice: "TRAINEE",
+      warrior: "ELITE",
+      elite: "MASTER",
+      master: "LEGEND",
+      legend: "MYTHIC"
+    },
+
+    // --- ⚙️ SETTINGS & APPEARANCE ---
     settings: "SETTINGS",
+    appearance_title: "SYSTEM APPEARANCE",
     accent_title: "SYSTEM ACCENT COLOR",
     wallpaper_title: "ELITE WALLPAPER PRESETS",
     custom_wallpaper: "CUSTOM WALLPAPER ENGINE",
@@ -32,7 +55,10 @@ export const translations = {
     lang_title: "SYSTEM LANGUAGE",
     update_user: "UPDATE USERNAME",
     logout_btn: "LOGOUT ACCOUNT",
-    // Explorer Mode
+    music_title: "NEURAL MUSIC MOOD",
+    persistence_title: "CORE PERSISTENCE",
+
+    // --- 🔍 EXPLORER MODE ---
     explorer_title: "EXPLORER",
     explorer_mode: "MODE",
     explorer_sub: "SEARCH BY GENRE, SEASON, OR RELEASE YEAR",
@@ -49,15 +75,12 @@ export const translations = {
     year_release: "YEAR RELEASE",
     year_label: "YEAR",
     loading_jikan: "LOADING JIKAN DATA...",
-    // Seasons & Genres
-    winter: "WINTER",
-    spring: "SPRING",
-    summer: "SUMMER",
-    fall: "FALL",
-    genre: "GENRE",
-    season: "SEASON",
-    year: "YEAR",
-    // Detail Modal & Social Share
+
+    // --- ❄️ SEASONS & GENRES ---
+    winter: "WINTER", spring: "SPRING", summer: "SUMMER", fall: "FALL",
+    genre: "GENRE", season: "SEASON", year: "YEAR",
+
+    // --- 🎬 DETAIL MODAL & SOCIAL ---
     in_watchlist: "IN WATCHLIST",
     add_watchlist: "ADD WATCHLIST",
     synopsis: "SYNOPSIS",
@@ -67,7 +90,15 @@ export const translations = {
     copy_link: "COPY LINK",
     link_copied: "LINK COPIED TO CLIPBOARD!",
     release: "Release",
-    // Toast & System Message
+    episodes: "Episodes",
+    score: "Score",
+
+    // --- 📅 MONTHS ---
+    jan: "January", feb: "February", mar: "March", apr: "April", 
+    may: "May", jun: "June", jul: "July", aug: "August", 
+    sep: "September", oct: "October", nov: "November", dec: "December",
+
+    // --- 🔔 TOAST & SYSTEM MESSAGES ---
     system_label: "UDUDNIME SYSTEM",
     success_add: "Added to watchlist gais!",
     success_remove: "Removed from watchlist!",
@@ -75,8 +106,10 @@ export const translations = {
     level_up: "LEVEL UP! YOU ARE NOW RANK:",
     backup_success: "Data exported successfully!",
     restore_success: "Data restored perfectly gais!",
+    restore_fail: "INVALID JSON FILE!",
     logout_success: "LOGGED OUT SUCCESSFULLY!",
-    // Auth Modal (EN)
+
+    // --- 🔐 AUTH MODAL ---
     login_title: "BACK AGAIN?",
     register_title: "JOIN US GAIS!",
     login_sub: "Login to continue your leveling progress.",
@@ -91,12 +124,47 @@ export const translations = {
     err_login: "Invalid Email or Password gais!",
     err_empty: "Please fill all fields first.",
     err_exists: "Email already registered!",
-    register_success: "ACCOUNT CREATED! PLEASE LOGIN GAIS."
+    register_success: "ACCOUNT CREATED! PLEASE LOGIN GAIS.",
+
+    // --- Terms ----
+    terms_header: "TERMS & RULES",
+    terms_tagline: "Usage protocols for the security and comfort of all gais.",
+    terms_btn: "Acknowledge & Return",
+    disclaimer_content: "Ududnime does not store any video files on our server. All metadata is sourced from Jikan/MyAnimeList API gais.",
+    terms_list: [
+      {
+        title: 'Service Acceptance',
+        content: 'By accessing Ududnime, you are deemed to have agreed to all of our system protocols gais. We reserve the right to change these rules at any time for system stability.',
+        subPoints: ['Global Compliance', 'API Access Protocol', 'Data Security']
+      },
+      {
+        title: 'Content & Copyright',
+        content: 'Ududnime is just a catalog. All anime data (images, synopsis, scores) belong to their original creators gais. We use Jikan API as a data intermediary.',
+        subPoints: ['No Video Storage', 'Fair Use Policy', 'Credit Attribution']
+      },
+      {
+        title: 'Account & XP System',
+        content: 'Users are responsible for the security of their own accounts gais. XP and Levels earned are virtual and have no commercial value in the real world.',
+        subPoints: ['Anti-Spam Activity', 'Real-time Sync', 'Data Privacy']
+      }
+    ],
+
+    dev_profile: "Developer Profile",
+    about_desc: "UDUDNIME is a modern anime catalog platform developed to facilitate real-time anime searching and tracking for anime lovers gais.",
+    tech_title: "Technology Stack",
+    back_home: "Back to Home",
+    email_copied: "EMAIL COPIED!",
+
+    // --- END OF ENGLISH TRANSLATIONS ---
   },
+
   id: {
-    // Hero & Tagline
+    // --- 🚀 HERO & TAGLINE ---
     tagline: "Katalog anime modern untuk menemani waktu santaimu gais.",
-    // Menu & General
+    welcome: "SELAMAT DATANG",
+    welcome_sub: "Siap melanjutkan perjalananmu?",
+
+    // --- 🛰️ MENU & NAVIGATION ---
     home: "BERANDA",
     browse: "JELAJAH",
     schedule: "JADWAL",
@@ -104,9 +172,18 @@ export const translations = {
     dashboard: "PANEL AKUN",
     logout: "KELUAR",
     login: "MASUK",
-    welcome: "SELAMAT DATANG",
     member: "ANGGOTA SEJAK",
-    // Watchlist & Stats
+    return_home: "KEMBALI KE BERANDA",
+
+    // --- 🌌 SPECIAL CATEGORIES ---
+    explore_universe: "JELAJAH SEMESTA",
+    top_10_trending: "10 TERPOPULER",
+    trending_title: "Populer",
+    filter_today: "Hari Ini",
+    filter_weekly: "Minggu",
+    filter_monthly: "Bulan",
+
+    // --- 📊 WATCHLIST & STATS ---
     watchlist: "DAFTAR TONTON",
     stats: "STATISTIK",
     empty: "NGGAK ADA DATA GAIS.",
@@ -114,8 +191,19 @@ export const translations = {
     analytics_sub: "Preferensi genre berdasarkan koleksimu gais.",
     empty_stats: "Belum ada data statistik.",
     exp_label: "PROGRES XP",
-    // Settings & Personalization
+    rank_title: "PERINGKAT GELAR",
+    rank_titles: {
+      novice: "PEMULA",
+      apprentice: "PELAJAR",
+      warrior: "PEJUANG",
+      elite: "ELITE",
+      master: "MASTER",
+      legend: "LEGENDA"
+    },
+
+    // --- ⚙️ SETTINGS & APPEARANCE ---
     settings: "PENGATURAN",
+    appearance_title: "TAMPILAN SISTEM",
     accent_title: "WARNA AKSEN SISTEM",
     wallpaper_title: "PRESET WALLPAPER ELITE",
     custom_wallpaper: "MESIN WALLPAPER CUSTOM",
@@ -126,9 +214,12 @@ export const translations = {
     lang_title: "BAHASA SISTEM",
     update_user: "PERBARUI USERNAME",
     logout_btn: "KELUAR AKUN",
-    // Explorer Mode
-    explorer_title: "MODE",
-    explorer_mode: "JELAJAH",
+    music_title: "MUSIK NEURAL LOFI",
+    persistence_title: "KEAMANAN DATA",
+
+    // --- 🔍 EXPLORER MODE ---
+    explorer_title: "JELAJAH",
+    explorer_mode: "MODE",
     explorer_sub: "CARI BERDASARKAN GENRE, MUSIM, ATAU TAHUN RILIS",
     random_btn: "ANIME ACAK",
     searching: "MENCARI...",
@@ -143,15 +234,12 @@ export const translations = {
     year_release: "TAHUN RILIS",
     year_label: "TAHUN",
     loading_jikan: "MENGAMBIL DATA JIKAN...",
-    // Seasons & Genres
-    winter: "DINGIN (WINTER)",
-    spring: "SEMI (SPRING)",
-    summer: "PANAS (SUMMER)",
-    fall: "GUGUR (FALL)",
-    genre: "GENRE",
-    season: "MUSIM",
-    year: "TAHUN",
-    // Detail Modal & Social Share
+
+    // --- ❄️ SEASONS & GENRES ---
+    winter: "DINGIN (WINTER)", spring: "SEMI (SPRING)", summer: "PANAS (SUMMER)", fall: "GUGUR (FALL)",
+    genre: "GENRE", season: "MUSIM", year: "TAHUN",
+
+    // --- 🎬 DETAIL MODAL & SOCIAL ---
     in_watchlist: "DI WATCHLIST",
     add_watchlist: "TAMBAH WATCHLIST",
     synopsis: "SINOPSIS",
@@ -161,7 +249,15 @@ export const translations = {
     copy_link: "SALIN TAUTAN",
     link_copied: "TAUTAN DISALIN KE CLIPBOARD!",
     release: "Rilis",
-    // Toast & System Message
+    episodes: "Episode",
+    score: "Skor",
+
+    // --- 📅 BULAN ---
+    jan: "Januari", feb: "Februari", mar: "Maret", apr: "April", 
+    may: "Mei", jun: "Juni", jul: "Juli", aug: "Agustus", 
+    sep: "September", oct: "Oktober", nov: "November", dec: "Desember",
+
+    // --- 🔔 TOAST & SYSTEM MESSAGES ---
     system_label: "SISTEM UDUDNIME",
     success_add: "Berhasil nambah watchlist gais!",
     success_remove: "Dihapus dari watchlist!",
@@ -169,8 +265,10 @@ export const translations = {
     level_up: "LEVEL NAIK! RANK KAMU SEKARANG:",
     backup_success: "Data berhasil diekspor!",
     restore_success: "Data berhasil dipulihkan gais!",
+    restore_fail: "FILE JSON TIDAK VALID!",
     logout_success: "BERHASIL KELUAR!",
-    // Auth Modal (ID)
+
+    // --- 🔐 AUTH MODAL ---
     login_title: "BALIK LAGI?",
     register_title: "GABUNG GAIS!",
     login_sub: "Masuk buat lanjutin leveling kamu.",
@@ -185,194 +283,37 @@ export const translations = {
     err_login: "Email atau Password salah gais!",
     err_empty: "Isi semua kolomnya dulu dong.",
     err_exists: "Email ini sudah terdaftar!",
-    register_success: "AKUN BERHASIL DIBUAT! SILAHKAN LOGIN GAIS."
-  },
-  jv: {
-    // Hero & Tagline
-    tagline: "Katalog anime jaman saiki nggo kancani waktu santaimu cak.",
-    // Menu & General
-    home: "OMAH",
-    browse: "UBLEK-UBLEK",
-    schedule: "JADWAL RILIS",
-    about_us: "SOPO AKU",
-    dashboard: "OMAH AKUN",
-    logout: "METU",
-    login: "MLEBU",
-    welcome: "SUGENG RAWUH",
-    member: "GABUNG KET",
-    // Watchlist & Stats
-    watchlist: "SIMPENAN",
-    stats: "DATA SAKTI",
-    empty: "DATANE KOSONG CAK.",
-    analytics_title: "ITUNGAN SAKTI",
-    analytics_sub: "Iki lho genre sing mbok senengi cak.",
-    empty_stats: "Datane isih kosong cak.",
-    exp_label: "PROGRES SAKTI",
-    // Settings & Personalization
-    settings: "SETELAN",
-    accent_title: "PILIHAN WARNA",
-    wallpaper_title: "PRESET WALLPAPER SAKTI",
-    custom_wallpaper: "GANTI GAMBAR DEWE",
-    blur_force: "KEKUATAN BLUR",
-    brightness: "PADANGE LAYAR",
-    apply_btn: "GAS POL",
-    save_btn: "SIMPEN",
-    lang_title: "GANTI BOSO",
-    update_user: "GANTI JENENG",
-    logout_btn: "METU AKUN",
-    // Explorer Mode
-    explorer_title: "MODE",
-    explorer_mode: "UBLEK-UBLEK",
-    explorer_sub: "GOLEK BERDASARKAN GENRE, SEASON, UTAWO TAHUN RILIS",
-    random_btn: "ANIME ACAK",
-    searching: "GOLÈK...",
-    by_label: "NGANGGO",
-    sort_results: "Urutno",
-    sort_popularity: "Populer",
-    sort_score: "Rating",
-    sort_title: "Judul",
-    sort_members: "Favorit",
-    genre_list: "DAFTAR GENRE",
-    season_list: "DAFTAR MUSIM",
-    year_release: "TAHUN RILIS",
-    year_label: "TAHUN",
-    loading_jikan: "ENTENI DILUK KER...",
-    // Seasons & Genres
-    winter: "RENDENG (WINTER)",
-    spring: "SEMI (SPRING)",
-    summer: "PEMARENG (SUMMER)",
-    fall: "KEMARAU (FALL)",
-    genre: "GENRE",
-    season: "MUSIM",
-    year: "TAHUN",
-    // Detail Modal & Social Share
-    in_watchlist: "WES DISIMPEN",
-    add_watchlist: "SIMPEN REK",
-    synopsis: "RINGKASAN CERITO",
-    no_synopsis: "Gak ono ceritane cak.",
-    categories: "KATEGORI",
-    share_anime: "PAMER NANG KONCO",
-    copy_link: "SALIN LINK",
-    link_copied: "LINK WIS DISALIN CAK!",
-    release: "Rilis",
-    // Toast & System Message
-    system_label: "SISTEM UDUDNIME KER",
-    success_add: "Wes kesimpen gais, mantap!",
-    success_remove: "Wes guwak gais!",
-    error_action: "Eror ker, baleni maneh!",
-    level_up: "NAIK PANGKAT KER! RANKMU SAIKI:",
-    backup_success: "Data wes diamanno!",
-    restore_success: "Data wes mbalik maneh gais!",
-    logout_success: "WES METU KER!",
-    // Auth Modal (JV)
-    login_title: "BALIK MANEH?",
-    register_title: "GABUNG KER!",
-    login_sub: "Mlebuo nggo lanjutno progresmu.",
-    register_sub: "Gawe akun dhisik nggo nyimpen watchlist.",
-    username_label: "Jeneng",
-    username_placeholder: "CONTOH: CAK_UDUD",
-    register_btn: "GAWE AKUN",
-    no_account: "Gak duwe akun?",
-    have_account: "Wes duwe akun?",
-    register_link: "Daftar ker",
-    login_link: "Mlebu ae",
-    err_login: "Email utowo Password-e kleru ker!",
-    err_empty: "Isien kabeh dhisik rek.",
-    err_exists: "Email iki wes gawe!",
-    register_success: "AKUNMU WES DADI! SAIKI MLEBUO KER."
-  },
-  jp: {
-    // Hero & Tagline
-    tagline: "Anata no rirakkusu-taimu no tame no modan'na anime katarogu gais.",
-    // Menu & General
-    home: "HŌMU",
-    browse: "TANSAKU",
-    schedule: "SUKEJŪRU",
-    about_us: "WATASHITACHI",
-    dashboard: "DASSHUBŌDO",
-    logout: "RŌGUAUTO",
-    login: "ROGU-IN",
-    welcome: "OKAERINASAI",
-    member: "SANKA-BI",
-    // Watchlist & Stats
-    watchlist: "MURISUTO",
-    stats: "TŌKEI",
-    empty: "DĒTA GA NAI DESU.",
-    analytics_title: "MURISUTO BUNSEKI",
-    analytics_sub: "Korekushon ni motozuku janru no konomi.",
-    empty_stats: "Tōkei dēta ga arimasen.",
-    exp_label: "XP KEIKA",
-    // Settings & Personalization
-    settings: "SETTEI",
-    accent_title: "SHISUTEMU AKUSENTO",
-    wallpaper_title: "ERI-TO KABEGAMI",
-    custom_wallpaper: "KASUTAMU KABEGAMI",
-    blur_force: "BOKASHI",
-    brightness: "AKARUSA",
-    apply_btn: "TEKIYŌ",
-    save_btn: "HOZON",
-    lang_title: "GENGO SETTEI",
-    update_user: "YŪZĀ-MEI HENKŌ",
-    logout_btn: "RŌGUAUTO",
-    // Explorer Mode
-    explorer_title: "TANSAKU",
-    explorer_mode: "MŌDO",
-    explorer_sub: "JANRU, SHĪZUN, MATAWA RIRĪSU-TOSHI DE KENSAKU",
-    random_btn: "RANDAMU ANIME",
-    searching: "KENSAKU-CHŪ...",
-    by_label: "",
-    sort_results: "Narabekae",
-    sort_popularity: "Ninki-jun",
-    sort_score: "Sukoa-jun",
-    sort_title: "Taitoru-jun",
-    sort_members: "Okiniiri",
-    genre_list: "JANRU RISUTO",
-    season_list: "SHĪZUN RISUTO",
-    year_release: "RIRĪSU-TOSHI",
-    year_label: "TOSHI",
-    loading_jikan: "DĒTA O YOMIKOMI-CHŪ...",
-    // Seasons & Genres
-    winter: "FUYU",
-    spring: "HARU",
-    summer: "NATSU",
-    fall: "AKI",
-    genre: "JANRU",
-    season: "SHĪZUN",
-    year: "TOSHI",
-    // Detail Modal & Social Share
-    in_watchlist: "MURISUTO-NAI",
-    add_watchlist: "MURISUTO NI TSUIKA",
-    synopsis: "ARASUJI",
-    no_synopsis: "Setsumei ga arimasen.",
-    categories: "KATEGORĪ",
-    share_anime: "KONO ANIME O SHIERU",
-    copy_link: "RINKU O KOPĪ",
-    link_copied: "RINKU GA KOPĪ SAREMASHITA!",
-    release: "Rirīsu",
-    // Toast & System Message
-    system_label: "UDUDNIME SHISUTEMU",
-    success_add: "Risuto ni tsuika shimashita!",
-    success_remove: "Risuto kara sakujo shimashita!",
-    error_action: "Sippai shimashita, mōichido!",
-    level_up: "REBERU APPU! IMA NO RANKU:",
-    backup_success: "Bakkuappu kanryō!",
-    restore_success: "Dēta ga fukkyū shimashita!",
-    logout_success: "RŌGUAUTO NI SEIKŌ SHIMASHITA!",
-    // Auth Modal (JP)
-    login_title: "OKAERI?",
-    register_title: "SANKA SHIMASHOU!",
-    login_sub: "Reberu-age o tsudukeru ni wa rogu-in shite kudasai.",
-    register_sub: "Akauto o sakusei shite, risuto o tsukurimashou.",
-    username_label: "Yūzā-mei",
-    username_placeholder: "REI: UDUDHUNTER",
-    register_btn: "SANKA SURU",
-    no_account: "Akauto ga arimasen ka?",
-    have_account: "Akauto o omochi desu ka?",
-    register_link: "Tōroku suru",
-    login_link: "Rogu-in suru",
-    err_login: "Mēru ka pasuwādo ga machigatte imasu!",
-    err_empty: "Subete no kōmoku o nyūryoku shite kudasai.",
-    err_exists: "Kono mēru wa sude ni tōrokuされています!",
-    register_success: "AKAUNTO SAKUSEI KANRYŌ! ROGUIN SHITE KUDASAI."
+    register_success: "AKUN BERHASIL DIBUAT! SILAHKAN LOGIN GAIS.",
+
+    // --- Terms ---
+    terms_header: "KETENTUAN & ATURAN",
+    terms_tagline: "Protokol penggunaan layanan Ududnime demi keamanan dan kenyamanan bersama gais.",
+    terms_btn: "Pahami & Kembali",
+    disclaimer_content: "Ududnime tidak menyimpan file video di server kami. Semua metadata bersumber dari Jikan/MyAnimeList API gais.",
+    terms_list: [
+      {
+        title: 'Penerimaan Layanan',
+        content: 'Dengan mengakses Ududnime, kamu dianggap telah menyetujui seluruh protokol sistem kami gais. Kami berhak mengubah aturan ini kapan saja demi stabilitas sistem.',
+        subPoints: ['Kepatuhan Global', 'Protokol Akses API', 'Keamanan Data']
+      },
+      {
+        title: 'Konten & Hak Cipta',
+        content: 'Ududnime hanyalah katalog. Semua data anime (gambar, sinopsis, skor) adalah milik dari pencipta aslinya gais. Kami menggunakan Jikan API sebagai perantara data.',
+        subPoints: ['No Video Storage', 'Kebijakan Fair Use', 'Atribusi Kredit']
+      },
+      {
+        title: 'Akun & Sistem XP',
+        content: 'User bertanggung jawab atas keamanan akun masing-masing gais. XP dan Level yang didapat bersifat virtual dan tidak memiliki nilai komersial di dunia nyata.',
+        subPoints: ['Aktivitas Anti-Spam', 'Sinkronisasi Real-time', 'Privasi Data']
+      }
+    ],
+
+    dev_profile: "Profil Pengembang",
+    about_desc: "UDUDNIME adalah platform katalog anime modern yang dikembangkan untuk memudahkan pencarian dan pemantauan anime secara real-time gais.",
+    tech_title: "Teknologi Sistem",
+    back_home: "Balik ke Beranda",
+    email_copied: "EMAIL DISALIN!",
+
+    //--- END OF INDONESIAN TRANSLATIONS ---
   }
 };

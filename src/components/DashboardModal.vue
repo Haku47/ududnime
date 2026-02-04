@@ -134,7 +134,7 @@
             <div class="p-5 md:p-6 bg-black/40 rounded-[2rem] border border-white/5">
               <label class="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 block italic text-center">{{ t('lang_title') }}</label>
               <div class="grid grid-cols-2 gap-3">
-                <BaseButton v-for="(langName, code) in { en: 'English', id: 'Indonesia', jv: 'Jowo', jp: 'Nihongo' }" :key="code"
+                <BaseButton v-for="(langName, code) in { en: 'English', id: 'Indonesia' }" :key="code"
                   @click="updateLang(code)"
                   :variant="user.lang === code ? 'primary' : 'secondary'"
                   size="sm"
@@ -281,8 +281,33 @@ const uploadAvatar = (e) => {
 };
 
 const getRankTitle = computed(() => {
-  const lvl = props.user.level || 1;
-  return lvl >= 50 ? "HARDCORE WATCHER" : lvl >= 25 ? "SEASONAL EXPERT" : "OTAKU ROOKIE";
+  const lvl = props.user?.level || 1;
+  const lang = props.user?.lang || 'en';
+  
+  // Ambil daftar gelar dari i18n atau definisikan lokal (Bilingual Fallback) gais
+  const titles = translations[lang]?.rank_titles || (lang === 'id' ? {
+    novice: "PEMULA",
+    apprentice: "PELAJAR",
+    warrior: "PEJUANG",
+    elite: "ELITE",
+    master: "MASTER",
+    legend: "LEGENDA"
+  } : {
+    novice: "ROOKIE",
+    apprentice: "TRAINEE",
+    warrior: "ELITE",
+    elite: "MASTER",
+    master: "LEGEND",
+    legend: "MYTHIC"
+  });
+
+  // Logika Gelar berdasarkan tingkatan LEVEL gais
+  if (lvl < 5) return titles.novice;      // Level 1-4
+  if (lvl < 15) return titles.apprentice; // Level 5-14
+  if (lvl < 30) return titles.warrior;    // Level 15-29
+  if (lvl < 50) return titles.elite;      // Level 30-49
+  if (lvl < 80) return titles.master;     // Level 50-79
+  return titles.legend;                   // Level 80 keatas gais!
 });
 
 onMounted(() => { document.body.style.overflow = 'hidden'; });

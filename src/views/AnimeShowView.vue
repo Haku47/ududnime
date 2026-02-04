@@ -7,6 +7,7 @@
       @openDashboard="showDashboard = true"
       @logout="handleLogout"
       @openAuth="showAuth = true"
+      @goHome="router.push('/')"
     />
 
     <main class="container mx-auto px-4 py-12 md:py-24">
@@ -104,8 +105,8 @@
       </div>
     </main>
 
-    <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="handleAuthSuccess" />
-    <DashboardModal v-if="showDashboard" :user="currentUser" @close="showDashboard = false" @logout="handleLogout" @updateUser="handleUpdateUser" />
+    <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="processUserSync" />
+    <DashboardModal v-if="showDashboard" :user="currentUser" @close="showDashboard = false" @logout="handleLogout" @updateUser="processUserSync" />
   </div>
 </template>
 
@@ -114,6 +115,7 @@ import { ref, onMounted, computed, defineAsyncComponent, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { animeService } from '../services/api';
 import { translations } from '../utils/i18n';
+import { supabase } from '../utils/supabase'; // Import Supabase ker!
 
 const Navbar = defineAsyncComponent(() => import('../components/Navbar.vue'));
 const AuthModal = defineAsyncComponent(() => import('../components/AuthModal.vue'));
@@ -130,8 +132,30 @@ const showAuth = ref(false);
 const showDashboard = ref(false);
 
 const t = (key) => {
-  const lang = currentUser.value?.lang || 'en';
+  const lang = currentUser.value?.lang || 'id';
   return translations[lang]?.[key] || key;
+};
+
+// --- 🧠 CORE USER SYNC SYSTEM (UB STYLE) gais ---
+const processUserSync = (userObj, showMsg = false) => {
+  let user = { ...userObj };
+  
+  // Set tema warna global gais
+  if (user.themeColor) {
+    document.documentElement.style.setProperty('--accent-color', user.themeColor);
+    document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
+  }
+
+  // Logika Naik Level gais!
+  if (user.xp >= 100) {
+    user.level = (user.level || 1) + 1;
+    user.xp = user.xp % 100;
+    toastRef.value?.addToast(`LEVEL UP! SEKARANG LVL ${user.level}! 🚀`, 'level', 'fa-solid fa-rocket');
+  }
+
+  currentUser.value = user;
+  localStorage.setItem('ududnime_session', JSON.stringify(user));
+  if (showMsg) toastRef.value?.addToast("PROFIL DISINKRONKAN!", 'success');
 };
 
 const isBookmarked = computed(() => {
@@ -140,47 +164,28 @@ const isBookmarked = computed(() => {
 });
 
 const fetchAnimeDetail = async () => {
-  // --- 🛠️ FIX IDENTIFIKASI ID GAIS ---
   let id = route.params.id;
-  
-  // Jika ID mengandung titik dua (kesalahan routing), bersihkan gais!
-  if (id && id.includes(':')) {
-    id = id.replace(/:/g, '');
-  }
-
-  // Jika ID tidak valid (bukan angka), lempar ke Home gais
-  if (!id || isNaN(id)) {
-    router.push('/');
-    return;
-  }
+  if (id && id.includes(':')) id = id.replace(/:/g, '');
+  if (!id || isNaN(id)) { router.push('/'); return; }
 
   loading.value = true;
   anime.value = null; 
   try {
     const res = await animeService.getAnimeDetail(id);
-    if (res && res.data) {
-      anime.value = res.data;
-    }
+    if (res && res.data) anime.value = res.data;
   } catch (err) {
     console.error("SHOW_ERR", err);
-    anime.value = null;
   } finally {
     loading.value = false;
   }
 };
 
-const handleAuthSuccess = (user) => {
-  currentUser.value = user;
-  showAuth.value = false;
-};
-
-const handleUpdateUser = (updatedUser) => {
-  currentUser.value = updatedUser;
-  localStorage.setItem('ududnime_session', JSON.stringify(updatedUser));
-};
-
 const handleToggleWatchlist = () => {
-  if (!currentUser.value) { showAuth.value = true; return; }
+  if (!currentUser.value) { 
+    toastRef.value?.addToast("LOGIN DULU GAIS!", "error", "fa-solid fa-user-lock");
+    showAuth.value = true; 
+    return; 
+  }
   
   let user = { ...currentUser.value };
   if (!user.watchlist) user.watchlist = [];
@@ -189,35 +194,62 @@ const handleToggleWatchlist = () => {
     id: anime.value.mal_id,
     title: anime.value.title,
     image: anime.value.images?.jpg?.image_url,
-    genres: anime.value.genres
+    type: anime.value.type || 'TV',
+    status: anime.value.status || 'N/A'
   };
 
   const idx = user.watchlist.findIndex(i => i.id === animeData.id);
   if (idx === -1) {
     user.watchlist.push(animeData);
-    toastRef.value?.addToast(t('success_add'), "success");
-    user.xp = (user.xp || 0) + 10;
+    toastRef.value?.addToast("DITAMBAHKAN KE WATCHLIST!", "success");
+    user.xp = (user.xp || 0) + 15; // Tambah XP lebih banyak di detail gais
   } else {
     user.watchlist.splice(idx, 1);
-    toastRef.value?.addToast(t('success_remove'), "info");
+    toastRef.value?.addToast("DIHAPUS DARI WATCHLIST!", "info");
   }
 
-  handleUpdateUser(user);
+  processUserSync(user);
 };
 
-const handleLogout = () => {
-  localStorage.removeItem('ududnime_session');
-  currentUser.value = null;
-  showDashboard.value = false;
+const handleLogout = async () => {
+  try {
+    if (supabase) await supabase.auth.signOut();
+    localStorage.removeItem('ududnime_session');
+    currentUser.value = null;
+    showDashboard.value = false;
+    toastRef.value?.addToast("BERHASIL LOGOUT! SAMPAI JUMPA GAIS!", 'info');
+    // Reset warna ke default gais
+    document.documentElement.style.setProperty('--accent-color', '#f97316');
+  } catch (err) {
+    console.error("LOGOUT_ERR", err);
+  }
 };
 
-watch(() => route.params.id, () => {
-  fetchAnimeDetail();
-});
+watch(() => route.params.id, () => fetchAnimeDetail());
 
-onMounted(() => {
-  const session = localStorage.getItem('ududnime_session');
-  if (session) currentUser.value = JSON.parse(session);
+onMounted(async () => {
+  // 1. Cek Supabase Session gais
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { user } = session;
+    const mapped = {
+      id: user.id,
+      username: user.user_metadata.full_name || user.email.split('@')[0],
+      avatar: user.user_metadata.avatar_url,
+      level: 1, xp: 0, watchlist: [], lang: 'id'
+    };
+    processUserSync(mapped);
+  }
+
+  // 2. Cek localSession gais
+  const sessionData = localStorage.getItem('ududnime_session');
+  if (sessionData && !currentUser.value) processUserSync(JSON.parse(sessionData));
+
   fetchAnimeDetail();
 });
 </script>
+
+<style scoped>
+.fade-in { animation: fadeIn 0.8s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>

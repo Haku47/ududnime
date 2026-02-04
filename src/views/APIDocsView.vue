@@ -1,87 +1,91 @@
 <template>
-  <div class="min-h-screen bg-[#020617] text-slate-100 font-inter selection:bg-[var(--accent-glow)] overflow-x-hidden">
+  <div class="min-h-screen bg-[#020617] text-slate-100 font-inter selection:bg-[var(--accent-glow)] overflow-x-hidden relative">
     <Toast ref="toastRef" />
 
     <Navbar 
       :user="currentUser" 
-      @goHome="router.push('/')" 
-      @openDashboard="handleOpenDashboard"
+      @goHome="() => router.push('/')" 
+      @openDetail="openDetail" 
+      @openDashboard="showDashboard = true"
       @logout="handleLogout"
       @openAuth="showAuth = true"
+      @updateUser="handleUpdateUser"
     />
 
-    <main class="container mx-auto px-4 py-12 relative z-10">
-      <header class="mb-10 fade-in">
-        <div class="flex items-center gap-4 mb-4">
-          <div class="h-10 w-2 bg-[var(--accent-color)] rounded-full shadow-[0_0_15px_var(--accent-glow)]"></div>
-          <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
-            RELEASE <span class="text-[var(--accent-color)]">SCHEDULE</span>
-          </h1>
+    <div class="relative w-full pt-36 md:pt-48 pb-12 px-4 mb-10 overflow-hidden -mt-28">
+      <div class="absolute inset-0 z-0">
+        <img src="https://images.alphacoders.com/132/1322100.png" 
+          class="w-full h-full object-cover opacity-20 scale-110"
+          :style="{ filter: 'blur(12px) brightness(30%)' }" />
+        <div class="absolute inset-0 bg-gradient-to-b from-[#020617]/90 via-transparent to-[#020617]"></div>
+      </div>
+
+      <div class="relative z-10 max-w-4xl mx-auto text-center animate-fade-in">
+        <div class="inline-flex items-center gap-3 px-5 py-2 bg-[var(--accent-bg)] border border-[var(--accent-color)]/20 rounded-full mb-8">
+           <i class="fa-solid fa-microchip text-[var(--accent-color)] text-[10px]"></i>
+           <p class="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-[0.4em]">Developer Documentation</p>
         </div>
-        <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] opacity-80 italic">
-          Jadwal rilis anime real-time — Berdasarkan waktu rilis Jepang
+        <h1 class="text-6xl md:text-8xl font-black uppercase italic tracking-tighter mb-4 leading-none">
+          SYSTEM <span class="text-[var(--accent-color)] drop-shadow-[0_0_30px_var(--accent-glow)]">CORE</span>
+        </h1>
+        <p class="text-slate-500 text-[11px] font-black uppercase tracking-[0.4em] max-w-2xl mx-auto italic opacity-70 leading-relaxed">
+          Panduan integrasi dan spesifikasi teknis arsitektur data Ududnime gais.
         </p>
-      </header>
+      </div>
+    </div>
 
-      <div class="relative mb-12 fade-in">
-        <div class="flex gap-3 overflow-x-auto pb-4 no-scrollbar snap-x scroll-smooth">
-          <button 
-            v-for="day in days" 
-            :key="day"
-            @click="activeDay = day"
-            :class="[
-              'px-8 py-3.5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all border snap-start whitespace-nowrap',
-              activeDay === day 
-                ? 'bg-[var(--accent-color)] border-white/10 text-white shadow-xl shadow-[var(--accent-glow)] scale-105' 
-                : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:text-slate-300 hover:border-slate-600'
-            ]"
-          >
-            {{ day }}
+    <main class="container mx-auto px-4 py-12 relative z-10">
+      <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <aside class="lg:col-span-3 space-y-4 h-fit lg:sticky lg:top-24 hidden lg:block">
+          <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 px-4">Endpoints</p>
+          <button v-for="section in apiDocs" :key="section.id" 
+            @click="scrollTo(section.id)"
+            class="w-full text-left px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-transparent hover:bg-white/5 active:scale-95"
+            :class="activeSection === section.id ? 'bg-[var(--accent-bg)] text-[var(--accent-color)] border-[var(--accent-color)]/20 shadow-lg' : 'text-slate-500'">
+            {{ section.title }}
           </button>
-        </div>
-        <div class="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-[#020617] to-transparent pointer-events-none md:hidden"></div>
-      </div>
+        </aside>
 
-      <div v-if="loading" class="flex flex-col justify-center items-center py-32 gap-6">
-        <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-[var(--accent-color)] shadow-[0_0_20px_var(--accent-glow)]"></div>
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--accent-color)] animate-pulse">MENARIK DATA JIKAN...</p>
-      </div>
+        <div class="lg:col-span-9 space-y-16">
+          <section v-for="section in apiDocs" :key="section.id" :id="section.id" class="space-y-8 scroll-mt-32">
+            <div class="flex items-center gap-4">
+               <div class="h-8 w-1.5 bg-[var(--accent-color)] rounded-full"></div>
+               <h2 class="text-3xl font-black uppercase italic text-white tracking-tight">{{ section.title }}</h2>
+            </div>
 
-      <div v-else>
-        <div v-if="scheduleList.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-10 fade-in">
-          <AnimeCard 
-            v-for="anime in scheduleList" 
-            :key="anime.mal_id" 
-            :anime="anime" 
-            @showDetail="openDetail" 
-          />
-        </div>
-        <div v-else class="text-center py-32 bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-white/5">
-          <i class="fa-solid fa-calendar-xmark text-4xl text-slate-800 mb-6 block"></i>
-          <p class="text-slate-600 text-[11px] font-black uppercase tracking-[0.4em]">TIDAK ADA JADWAL HARI INI.</p>
+            <p class="text-slate-400 text-sm leading-relaxed font-medium">
+              {{ section.description }}
+            </p>
+
+            <div class="bg-slate-950 rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
+              <div class="px-6 py-3 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                <div class="flex gap-1.5">
+                  <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                  <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">JSON Protocol</span>
+              </div>
+              <pre class="p-8 overflow-x-auto custom-scroll font-mono text-[11px] md:text-xs leading-relaxed text-blue-400">
+<code><span class="text-pink-500">GET</span> {{ section.endpoint }}
+
+<span class="text-slate-500">// Response Structure</span>
+{
+  <span class="text-emerald-400">"status"</span>: 200,
+  <span class="text-emerald-400">"data"</span>: [
+    {
+      <span class="text-emerald-400">"mal_id"</span>: <span class="text-yellow-500">12345</span>,
+      <span class="text-emerald-400">"title"</span>: <span class="text-yellow-500">"{{ section.exampleTitle }}"</span>,
+      <span class="text-emerald-400">"type"</span>: <span class="text-yellow-500">"TV"</span>
+    }
+  ]
+}</code></pre>
+            </div>
+          </section>
         </div>
       </div>
     </main>
-
-    <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="handleAuthSuccess" />
-    
-    <DashboardModal 
-      v-if="showDashboard" 
-      :user="currentUser" 
-      @close="handleCloseDashboard" 
-      @logout="handleLogout" 
-      @updateUser="handleUpdateUser" 
-      @removeFromWatchlist="(id) => handleToggleWatchlist({id})"
-    />
-
-    <DetailModal 
-      v-if="selectedAnime" 
-      :anime="selectedAnime" 
-      :user="currentUser"
-      @close="selectedAnime = null" 
-      @toggleWatchlist="handleToggleWatchlist"
-      @openAuth="showAuth = true"
-    />
 
     <footer class="relative mt-40 border-t border-white/5 bg-[#020617] overflow-hidden">
       <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--accent-color)] to-transparent opacity-40"></div>
@@ -166,138 +170,96 @@
 
       <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-[var(--accent-color)] opacity-[0.03] rounded-full blur-[120px]"></div>
     </footer>
+
+    <AuthModal v-if="showAuth" @close="showAuth = false" @authSuccess="handleAuthSuccess" />
+    <DashboardModal v-if="showDashboard" :user="currentUser" @close="showDashboard = false" @logout="handleLogout" @updateUser="handleUpdateUser" />
+    <DetailModal v-if="selectedAnime" :anime="selectedAnime" :user="currentUser" @close="selectedAnime = null" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, defineAsyncComponent, nextTick } from 'vue';
+import { ref, onMounted, defineAsyncComponent } from 'vue';
 import { useRouter } from 'vue-router';
-import { animeService } from '../services/api';
 
 const Navbar = defineAsyncComponent(() => import('../components/Navbar.vue'));
-const AnimeCard = defineAsyncComponent(() => import('../components/AnimeCard.vue'));
-const DetailModal = defineAsyncComponent(() => import('../components/DetailModal.vue'));
+const Toast = defineAsyncComponent(() => import('../components/Toast.vue'));
 const AuthModal = defineAsyncComponent(() => import('../components/AuthModal.vue'));
 const DashboardModal = defineAsyncComponent(() => import('../components/DashboardModal.vue'));
-const Toast = defineAsyncComponent(() => import('../components/Toast.vue'));
+const DetailModal = defineAsyncComponent(() => import('../components/DetailModal.vue'));
 
 const router = useRouter();
 const currentUser = ref(null);
-const scheduleList = ref([]);
-const loading = ref(false);
-const selectedAnime = ref(null);
 const showAuth = ref(false);
 const showDashboard = ref(false);
+const selectedAnime = ref(null);
 const toastRef = ref(null);
+const activeSection = ref('top-anime');
 
-const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-const getToday = () => {
-  const dayIndex = new Date().getDay();
-  return days[dayIndex === 0 ? 6 : dayIndex - 1];
-};
-
-const activeDay = ref(getToday());
-
-const fetchSchedule = async () => {
-  if (loading.value) return;
-  loading.value = true;
-  try {
-    const res = await animeService.getSchedule(activeDay.value);
-    scheduleList.value = (res.data || []).sort((a, b) => (b.score || 0) - (a.score || 0));
-  } catch (error) {
-    toastRef.value?.addToast("GAGAL LOAD JADWAL!", "error");
-  } finally {
-    loading.value = false;
+const apiDocs = [
+  {
+    id: 'top-anime',
+    title: 'Top Anime',
+    description: 'Mengambil daftar anime paling populer secara global berdasarkan metrik Jikan Core.',
+    endpoint: '/top/anime?filter=bypopularity',
+    exampleTitle: 'Cowboy Bebop'
+  },
+  {
+    id: 'schedules',
+    title: 'Season Schedule',
+    description: 'Mendapatkan jadwal tayang anime seasonal yang disinkronisasi dengan waktu lokal gais.',
+    endpoint: '/schedules?filter=monday',
+    exampleTitle: 'One Piece'
+  },
+  {
+    id: 'details',
+    title: 'Anime Details',
+    description: 'Mengambil metadata lengkap termasuk sinopsis, genre, dan trailer menggunakan ID unik.',
+    endpoint: '/anime/{id}/full',
+    exampleTitle: 'Naruto Shippuden'
   }
-};
+];
 
-const handleOpenDashboard = () => {
-  showDashboard.value = true;
-  nextTick(() => {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-  });
-};
-
-const handleCloseDashboard = () => {
-  showDashboard.value = false;
-  document.body.style.overflow = '';
-  document.documentElement.style.overflow = '';
+const scrollTo = (id) => {
+  activeSection.value = id;
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
 };
 
 const handleAuthSuccess = (user) => {
   currentUser.value = user;
   showAuth.value = false;
-  toastRef.value?.addToast(`HALO ${user.username.toUpperCase()}!`, "success");
 };
 
 const handleUpdateUser = (updatedUser) => {
   currentUser.value = updatedUser;
   localStorage.setItem('ududnime_session', JSON.stringify(updatedUser));
-  // Sinkronisasi warna tema jika ada perubahan gais
   if (updatedUser.themeColor) {
     document.documentElement.style.setProperty('--accent-color', updatedUser.themeColor);
-    document.documentElement.style.setProperty('--accent-glow', `${updatedUser.themeColor}66`);
   }
 };
 
 const handleLogout = () => {
   localStorage.removeItem('ududnime_session');
   currentUser.value = null;
-  handleCloseDashboard();
-  toastRef.value?.addToast("BERHASIL LOGOUT!", "info");
+  showDashboard.value = false;
 };
 
 const openDetail = (anime) => { selectedAnime.value = anime; };
-
-const handleToggleWatchlist = (animeData) => {
-  if (!currentUser.value) { showAuth.value = true; return; }
-  let user = { ...currentUser.value };
-  if (!user.watchlist) user.watchlist = [];
-  const idx = user.watchlist.findIndex(i => i.id === animeData.id);
-  
-  if (idx === -1) {
-    user.watchlist.push(animeData);
-    toastRef.value?.addToast("MASUK WATCHLIST!", "success");
-  } else {
-    user.watchlist.splice(idx, 1);
-    toastRef.value?.addToast("DIHAPUS DARI LIST!", "info");
-  }
-  
-  currentUser.value = user;
-  localStorage.setItem('ududnime_session', JSON.stringify(user));
-};
 
 onMounted(() => {
   const session = localStorage.getItem('ududnime_session');
   if (session) {
     const user = JSON.parse(session);
     currentUser.value = user;
-    // Terapkan tema saat load gais
     if (user.themeColor) {
       document.documentElement.style.setProperty('--accent-color', user.themeColor);
-      document.documentElement.style.setProperty('--accent-glow', `${user.themeColor}66`);
     }
   }
-  fetchSchedule();
 });
-
-onUnmounted(() => {
-  document.body.style.overflow = '';
-  document.documentElement.style.overflow = '';
-});
-
-watch(activeDay, () => fetchSchedule());
 </script>
 
 <style scoped>
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-.fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-@keyframes fadeIn { 
-  from { opacity: 0; transform: translateY(15px); } 
-  to { opacity: 1; transform: translateY(0); } 
-}
+.custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+.custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
 </style>

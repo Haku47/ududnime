@@ -1,51 +1,77 @@
 /**
  * UDUDNIME API SERVICE - PRO EDITION
  * Powered by Jikan API (MyAnimeList)
- * Optimized with Smart Caching & Error Handling gais!
+ * Optimized with Multilingual Support & Smart Caching gais!
  */
 
-// Ambil Base URL dari .env gais!
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // --- 🧠 SMART CACHE SYSTEM ---
-// Kita simpan data di memory supaya gak bombardir API pas refresh gais.
 const cache = new Map();
-const CACHE_DURATION = 5 * 60 * 1000; // Data disimpan 5 menit ya gais!
+const CACHE_DURATION = 5 * 60 * 1000; 
+
+// 🚀 ANTI-RATE LIMIT QUEUE
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+let lastRequestTime = 0;
 
 /**
- * FUNGSI FETCHER DENGAN CACHING & SMART ERROR HANDLING GAIS!
+ * AMBIL BAHASA DARI DASHBOARD USER GAIS
+ * Default: English ('en')
+ */
+const getActiveLang = () => {
+  const session = localStorage.getItem('ududnime_session');
+  if (session) {
+    try {
+      const user = JSON.parse(session);
+      return user.lang || 'en';
+    } catch (e) { return 'en'; }
+  }
+  return 'en';
+};
+
+/**
+ * FUNGSI FETCHER DENGAN DUKUNGAN BAHASA GAIS!
  */
 async function fetcher(endpoint) {
-  // 1. Cek apakah data ada di cache gais
+  const lang = getActiveLang();
+
+  // 1. Cek Memory Cache gais
   if (cache.has(endpoint)) {
     const { data, timestamp } = cache.get(endpoint);
-    if (Date.now() - timestamp < CACHE_DURATION) {
-      return data;
-    }
+    if (Date.now() - timestamp < CACHE_DURATION) return data;
+  }
+
+  // 2. Queue Protection
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  if (timeSinceLastRequest < 1000) {
+    await delay(1000 - timeSinceLastRequest);
   }
 
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`);
+    lastRequestTime = Date.now();
     
     if (!response.ok) {
       if (response.status === 429) {
-        // Kasih jeda 15 detik kalau kena limit gais!
-        throw new Error("RATE LIMIT: Jikan API lagi narik napas gais, tunggu 15 detik ya!");
+        await delay(2000);
+        return fetcher(endpoint); 
       }
-      if (response.status === 404) {
-        throw new Error("NOT FOUND: Data anime-nya gaib gais, gak ketemu.");
-      }
-      if (response.status >= 500) {
-        throw new Error("SERVER ERROR: Jikan API lagi tumbang, coba lagi nanti gais.");
-      }
-      throw new Error(`API ERROR: Status ${response.status}`);
+
+      // Pesan Error Multilingual gais
+      const errorMsgs = {
+        en: { 404: "NOT FOUND: Anime is missing gais.", 500: "SERVER ERROR: Jikan is dizzy gais." },
+        id: { 404: "NOT FOUND: Anime-nya gaib gais.", 500: "SERVER ERROR: Jikan lagi pusing gais." },
+        jv: { 404: "ORA KETEMU: Anime-ne ilang cak.", 500: "SERVER EROR: Jikan lagi mumet gais." },
+        jp: { 404: "見つかりません: アニメがありません gais.", 500: "サーバーエラー: サーバーが混雑しています。" }
+      };
+
+      const msg = errorMsgs[lang]?.[response.status] || `API ERROR: Status ${response.status}`;
+      throw new Error(msg);
     }
 
     const result = await response.json();
-    
-    // 2. Simpan hasil ke cache gais
     cache.set(endpoint, { data: result, timestamp: Date.now() });
-    
     return result;
   } catch (error) {
     console.error("SERVICE_FATAL_ERROR:", error.message);
@@ -54,63 +80,50 @@ async function fetcher(endpoint) {
 }
 
 export const animeService = {
-  // Ambil data Top Anime dengan filter dinamis gais!
+  // Ambil data Top Anime gais!
   async getTopAnime(page = 1, limit = 15, filter = 'bypopularity') {
     return fetcher(`/top/anime?filter=${filter}&page=${page}&limit=${limit}`);
   },
 
-  // AMBIL TOP 10 SEASONAL TRENDING GAIS!
+  // TOP 10 TRENDING GAIS!
   async getTop10() {
     return fetcher(`/top/anime?filter=airing&limit=10`);
   },
 
-  // Pencarian Anime berdasarkan teks
+  // Pencarian Anime (Min 3 huruf gais)
   async searchAnime(query, page = 1, limit = 15) {
-    if (!query) return null;
-    return fetcher(`/anime?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
+    const cleanQuery = query?.trim();
+    if (!cleanQuery || cleanQuery.length < 3) return null;
+    return fetcher(`/anime?q=${encodeURIComponent(cleanQuery)}&page=${page}&limit=${limit}`);
   },
 
-  // Ambil Anime berdasarkan Genre
+  // Berdasarkan Genre gais
   async getAnimeByGenre(genreId, page = 1, limit = 15) {
     return fetcher(`/anime?genres=${genreId}&order_by=popularity&sort=desc&page=${page}&limit=${limit}`);
   },
 
-  /**
-   * 📅 ESTIMATED SCHEDULE FETCHER GAIS!
-   * Berdasarkan waktu lokal Malang gais!
-   */
+  // Jadwal berdasarkan waktu Malang gais!
   async getSchedule(day = '') {
     const filter = day || new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     return fetcher(`/schedules?filter=${filter}&limit=20&kids=false&sfw=true`);
   },
 
-  // Ambil data Explorer dengan Sorting gais
+  // Explorer Mode gais
   async getExplorer(type, value, orderBy = 'popularity', sort = 'desc', limit = 16) {
     if (type === 'genre') {
       return fetcher(`/anime?genres=${value}&order_by=${orderBy}&sort=${sort}&limit=${limit}`);
     } else {
-      // Dinamis mengikuti tahun 2026 gais!
+      // Dinamis 2026 gais!
       return fetcher(`/anime?season=${value}&year=2026&order_by=${orderBy}&sort=${sort}&limit=${limit}`);
     }
   },
 
-  // Ambil data tahunan Anime
-  async getAnimeByYear(year, orderBy = 'popularity', sort = 'desc', limit = 16) {
-    return fetcher(`/anime?start_date=${year}-01-01&end_date=${year}-12-31&order_by=${orderBy}&sort=${sort}&limit=${limit}`);
-  },
-
-  // Ambil Random Anime
   async getRandomAnime() {
     return fetcher('/random/anime');
   },
 
-  // Ambil data Hero Carousel gais
-  async getHeroAnime() {
-    return fetcher(`/top/anime?filter=airing&limit=5`);
-  },
-
-  // Ambil Detail Lengkap Anime berdasarkan ID
   async getAnimeDetail(id) {
+    if (!id || isNaN(id)) throw new Error("INVALID_ID");
     return fetcher(`/anime/${id}/full`);
   }
 };

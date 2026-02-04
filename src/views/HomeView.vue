@@ -53,15 +53,10 @@ const scrollProgress = ref(0);
 let progressInterval = null;
 
 // --- 🌐 LOGIKA TRANSLASI GAIS ---
+// Fungsi Translasi Minimalis gais
 const t = (key) => {
-  const lang = currentUser.value?.lang || 'en';
-  const filterTranslations = {
-    en: { filter_today: "Today", filter_weekly: "Weekly", filter_monthly: "Monthly", trending_title: "Trending" },
-    id: { filter_today: "Hari Ini", filter_weekly: "Mingguan", filter_monthly: "Bulanan", trending_title: "Populer" },
-    jv: { filter_today: "Dino Iki", filter_weekly: "Mingguan", filter_monthly: "Wulanan", trending_title: "Sakti" },
-    jp: { filter_today: "Kyō", filter_weekly: "Shūkan", filter_monthly: "Gekkan", trending_title: "Toréndo" }
-  };
-  return filterTranslations[lang]?.[key] || translations[lang]?.[key] || key;
+  const lang = currentUser.value?.lang || 'en'; // Default English
+  return translations[lang]?.[key] || translations['en']?.[key] || key;
 };
 
 // --- ❄️ LOGIKA MUSIM (SEASONAL) ---
@@ -256,25 +251,42 @@ const syncSupabaseUser = (session) => {
 };
 
 onMounted(async () => {
-  // 1. Cek session Supabase pas baru buka gais
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) syncSupabaseUser(session);
+  // 🚀 1. PRIORITAS UTAMA: Ambil dari localStorage dulu gais!
+  // Ini biar pas F5, profil langsung muncul instan tanpa jeda mili-detik.
+  const localSession = localStorage.getItem('ududnime_session');
+  if (localSession) {
+    try {
+      const parsedUser = JSON.parse(localSession);
+      processUserProgress(parsedUser); // Langsung pasang ke state gais!
+    } catch (e) {
+      console.error("SESSION_CORRUPT");
+    }
+  }
 
-  // 2. Listener Supabase: Deteksi login GitHub gais!
+  // 🚀 2. VALIDASI CLOUD: Cek session Supabase di latar belakang gais
+  // Ini buat mastiin kalau tokennya masih valid atau ada update dari GitHub.
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    syncSupabaseUser(session);
+  } else if (!localSession) {
+    // Kalau di local gak ada, di supabase gak ada, baru fix null gais
+    currentUser.value = null;
+  }
+
+  // 🚀 3. LISTENER: Jaga-jaga kalau user login/logout di tab lain gais
   supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) syncSupabaseUser(session);
+    if (event === 'SIGNED_IN' && session) {
+      syncSupabaseUser(session);
+    }
     if (event === 'SIGNED_OUT') {
       currentUser.value = null;
       localStorage.removeItem('ududnime_session');
+      // Reset warna ke default pas logout gais
+      document.documentElement.style.setProperty('--accent-color', '#f97316');
     }
   });
-
-  // 3. Cek localStorage lama gais
-  const localSession = localStorage.getItem('ududnime_session');
-  if (localSession && !currentUser.value) {
-    processUserProgress(JSON.parse(localSession));
-  }
   
+  // Ambil data konten gais
   fetchTop10();
   fetchAnimeData();
 });
@@ -317,36 +329,31 @@ watch(top10Filter, () => fetchTop10());
         @toggleWatchlist="handleToggleWatchlist" @openAuth="showAuth = true"
       />
 
-      <div class="relative w-full py-20 md:py-32 px-4 mb-10 overflow-hidden">
-        <div class="absolute inset-0 z-0 transition-all duration-1000">
-          <img :src="currentUser?.customHomeBg || 'https://images.alphacoders.com/132/1327170.png'" 
-            class="w-full h-full object-cover transition-all duration-1000 scale-105"
-            :style="{ filter: `blur(${currentUser?.bgBlur ?? 2}px) brightness(${currentUser?.bgBrightness ?? 40}%)` }" />
-          <div class="absolute inset-0 bg-gradient-to-b from-[#020617]/40 via-transparent to-[#020617]"></div>
-        </div>
+<div class="relative w-full pt-36 md:pt-48 pb-20 md:pb-32 px-4 mb-10 overflow-hidden -mt-28">
+  
+  <div class="absolute inset-0 z-0 transition-all duration-1000">
+    <img :src="currentUser?.customHomeBg || 'https://images.alphacoders.com/132/1327170.png'" 
+      class="w-full h-full object-cover transition-all duration-1000 scale-105"
+      :style="{ filter: `blur(${currentUser?.bgBlur ?? 2}px) brightness(${currentUser?.bgBrightness ?? 40}%)` }" />
+    
+    <div class="absolute inset-0 bg-gradient-to-b from-[#020617]/80 via-[#020617]/20 to-[#020617]"></div>
+  </div>
 
-        <div class="relative z-10 max-w-4xl mx-auto bg-white/5 border border-white/10 backdrop-blur-2xl p-10 md:p-20 rounded-[4rem] shadow-2xl">
-          <header class="text-center mb-12">
-            <h1 class="text-5xl md:text-8xl font-black mb-6 tracking-tighter uppercase italic drop-shadow-2xl">
-              UDUD<span class="text-[var(--accent-color)] underline decoration-[12px] decoration-[var(--accent-glow)] underline-offset-[12px]">NIME</span>
-            </h1>
-            <p class="text-slate-400 text-[9px] md:text-xs font-black uppercase tracking-[0.5em] max-w-md mx-auto leading-relaxed opacity-70">
-              {{ t('tagline') }}
-            </p>
-          </header>
+  <div class="relative z-10 max-w-4xl mx-auto bg-white/5 border border-white/10 backdrop-blur-2xl p-10 md:p-20 rounded-[4rem] shadow-2xl">
+    <header class="text-center mb-12">
+      <h1 class="text-5xl md:text-8xl font-black mb-6 tracking-tighter uppercase italic drop-shadow-2xl">
+        UDUD<span class="text-[var(--accent-color)] underline decoration-[12px] decoration-[var(--accent-glow)] underline-offset-[12px]">NIME</span>
+      </h1>
+      <p class="text-slate-400 text-[9px] md:text-xs font-black uppercase tracking-[0.5em] max-w-md mx-auto leading-relaxed opacity-70">
+        {{ t('tagline') }}
+      </p>
+    </header>
 
-          <div class="max-w-2xl mx-auto space-y-6">
-            <SearchBar :user="currentUser" @search="handleSearch" />
-            <div class="flex justify-center">
-              <button @click="handleSeasonalLoad" class="group relative flex items-center gap-3 bg-white/5 hover:bg-[var(--accent-bg)] border border-white/10 px-6 py-3 rounded-2xl transition-all active:scale-95 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <i class="fa-solid fa-snowflake text-[var(--accent-color)] animate-pulse"></i>
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 group-hover:text-white transition-colors">{{ getCurrentSeason().toUpperCase() }} 2026 Recommendation</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="max-w-2xl mx-auto space-y-6">
+      <SearchBar :user="currentUser" @search="handleSearch" />
+    </div>
+  </div>
+</div>
 
       <main class="container mx-auto px-4 py-6">
         <section v-if="!searchQuery" class="mt-8 mb-24" @mouseenter="stopAutoPlay" @mouseleave="startAutoPlay">
@@ -406,17 +413,89 @@ watch(top10Filter, () => fetchTop10());
         </section>
       </main>
 
-      <footer class="text-center py-20 border-t border-white/5 mt-32 bg-slate-900/50 backdrop-blur-sm">
-        <div class="container mx-auto px-4 flex flex-col items-center gap-10">
-          <div class="cursor-pointer transition-all hover:scale-105 active:scale-95" @click="router.push('/status')">
-            <ApiStatus />
+    <footer class="relative mt-40 border-t border-white/5 bg-[#020617] overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--accent-color)] to-transparent opacity-40"></div>
+
+      <div class="container mx-auto px-6 pt-20 pb-12 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 mb-20">
+          
+          <div class="space-y-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-[var(--accent-color)] rounded-xl flex items-center justify-center shadow-[0_0_15px_var(--accent-glow)]">
+                <i class="fa-solid fa-film text-white text-sm"></i>
+              </div>
+              <h2 class="text-xl font-black text-white tracking-tighter uppercase italic">
+                Udud<span class="text-[var(--accent-color)]">nime</span>
+              </h2>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed max-w-xs font-medium">
+              Independent anime database architecture built for speed and immersion. Providing seamless access to global anime metadata gais.
+            </p>
+            <div class="flex gap-4">
+              <a v-for="social in ['github', 'instagram', 'x-twitter']" :key="social" href="#" 
+                class="w-9 h-9 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-slate-500 hover:text-white hover:border-[var(--accent-color)]/30 hover:bg-[var(--accent-bg)] transition-all duration-300">
+                <i :class="[`fa-brands fa-${social}`, 'text-sm']"></i>
+              </a>
+            </div>
           </div>
-          <div class="space-y-3">
-            <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">&copy; 2026 UDUDNIME — MALANG, INDONESIA</p>
-            <p class="text-[9px] font-bold text-slate-700 uppercase tracking-widest italic tracking-[0.2em]">MADE WITH 🧡 BY ALVIENSYAH MOHAMMAD — UB STUDENT</p>
+
+          <div class="flex flex-col items-start md:items-center">
+            <div class="space-y-6">
+              <p class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">System Navigation</p>
+              <ul class="grid grid-cols-2 gap-x-10 gap-y-4">
+                <li><router-link to="/" class="text-[11px] font-bold text-slate-500 hover:text-[var(--accent-color)] transition-colors uppercase tracking-widest">Home</router-link></li>
+                <li><router-link to="/explorer" class="text-[11px] font-bold text-slate-500 hover:text-[var(--accent-color)] transition-colors uppercase tracking-widest">Browse</router-link></li>
+                <li><router-link to="/schedule" class="text-[11px] font-bold text-slate-500 hover:text-[var(--accent-color)] transition-colors uppercase tracking-widest">Schedule</router-link></li>
+                <li><router-link to="/about-us" class="text-[11px] font-bold text-slate-500 hover:text-[var(--accent-color)] transition-colors uppercase tracking-widest">About Us</router-link></li>
+                
+                <li><router-link to="/status" class="text-[11px] font-bold text-slate-600 hover:text-white transition-colors uppercase tracking-widest">Status</router-link></li>
+                <li><router-link to="/api-docs" class="text-[11px] font-bold text-slate-600 hover:text-white transition-colors uppercase tracking-widest">API</router-link></li>
+                <li><router-link to="/changelog" class="text-[11px] font-bold text-slate-600 hover:text-white transition-colors uppercase tracking-widest">Changelog</router-link></li>
+                <li><router-link to="/privacy-policy" class="text-[11px] font-bold text-slate-600 hover:text-white transition-colors uppercase tracking-widest">Terms</router-link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-start md:items-end space-y-6">
+            <div class="text-left md:text-right space-y-2">
+              <p class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">Engine Status</p>
+              <div class="cursor-pointer group" @click="$router.push('/status')">
+                <ApiStatus />
+              </div>
+            </div>
+            <div class="p-4 bg-white/[0.02] border border-white/5 rounded-2xl md:text-right w-full md:w-auto">
+              <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Core Integrity</p>
+              <p class="text-[10px] font-black text-emerald-400 uppercase">Synchronized v4.2.0</p>
+            </div>
           </div>
         </div>
-      </footer>
+
+        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
+              &copy; 2026 UDUDNIME — INDONESIA
+            </p>
+            <div class="hidden md:block h-3 w-[1px] bg-slate-800"></div>
+            <div class="flex items-center gap-2">
+              <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest italic">Developed by</span>
+              <span class="text-[10px] font-black text-white uppercase tracking-widest hover:text-[var(--accent-color)] transition-colors cursor-default">
+                Alviensyah Mohammad
+              </span>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-6 opacity-30">
+            <div class="flex items-center gap-2">
+              <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]"></div>
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Global CDN</span>
+            </div>
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">SSL Secure</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-[var(--accent-color)] opacity-[0.03] rounded-full blur-[120px]"></div>
+    </footer>
     </div>
     
     <button @click="scrollToTop" class="fixed bottom-8 right-8 z-[100] bg-[var(--accent-color)] text-white w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:opacity-80 active:scale-90 transition-all border border-white/10">
